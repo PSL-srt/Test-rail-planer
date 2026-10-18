@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="th" data-lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#841b3a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="ระบบคำนวณวันเปิดจองตั๋วรถไฟล่วงหน้า สถานีรถไฟพิษณุโลก" />
+  <title>สถานีรถไฟพิษณุโลก | เช็กวันจองตั๋วล่วงหน้า</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23841b3a'/%3E%3Ctext x='32' y='39' font-family='sans-serif' font-size='20' font-weight='bold' text-anchor='middle' fill='white'%3EPLK%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=K2D:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    try { 
+      const t = JSON.parse(localStorage.getItem('plkNorthTheme')); 
+      document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); 
+      const l = localStorage.getItem('plkNorthLang');
+      if (l) document.documentElement.dataset.lang = l;
+    }
+    catch { document.documentElement.dataset.theme = 'light'; }
+  </script>
+  <style>
+    :root{color-scheme:light;--brand:#841b3a;--brand-deep:#531329;--brand-soft:#f8edf1;--gold:#b99555;--ink:#222734;--muted:#626879;--muted-2:#858b9a;--bg:#f4f5f8;--surface:#fff;--surface-2:#f8f9fb;--surface-3:#f0f2f6;--line:#e2e5ec;--line-strong:#c8ccd7;--success:#176649;--success-bg:#eaf6ef;--warning:#895b18;--warning-bg:#fff6e6;--danger:#b5313e;--danger-bg:#fff0f1;--shadow:0 10px 30px rgba(39,25,36,.06);--focus:0 0 0 4px #841b3a1c;--topbar:72px}
+    html[data-theme="dark"]{color-scheme:dark;--brand:#eda1b9;--brand-deep:#f5bdcf;--brand-soft:#33212b;--ink:#edf0f5;--muted:#b0b7c5;--muted-2:#8a93a4;--bg:#11151e;--surface:#1a202c;--surface-2:#202735;--surface-3:#272e3e;--line:#333b4c;--line-strong:#566078;--success:#a6debd;--success-bg:#1b342b;--warning:#eac78d;--warning-bg:#382e20;--danger:#ffb2bb;--danger-bg:#3a252d;--shadow:0 10px 30px #0004}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'K2D','Leelawadee UI',Tahoma,sans-serif;font-weight:400;line-height:1.6;font-size:16px;-webkit-tap-highlight-color:transparent}
+    button,input,select{font:inherit;touch-action:manipulation}
+    button{cursor:pointer;color:inherit}
+    button:disabled{cursor:not-allowed;opacity:.55}
+    button:focus-visible,a:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+    input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:var(--focus)}
+    h1,h2,h3,p{margin:0}
+    h1,h2,h3{font-weight:600}
+    strong,b{font-weight:500}
+    .hidden{display:none!important}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    .topbar{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+    .topbar-inner{max-width:1080px;min-height:var(--topbar);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px}
+    .brand{display:flex;gap:12px;align-items:center;text-align:left}
+    .brand-mark{width:44px;height:44px;border-radius:12px;background:#841b3a;color:#fff;display:grid;place-items:center;font-weight:600;font-size:16px;letter-spacing:.5px;flex-shrink:0;box-shadow:0 4px 10px #841b3a24}
+    .brand-text{display:flex;flex-direction:column}
+    .brand-title{font-size:16px;font-weight:600;line-height:1.3;color:var(--ink)}
+    .brand-sub{font-size:12px;color:var(--brand);margin-top:2px;font-weight:500}
+    .top-actions{display:flex;gap:8px;align-items:center}
+    .icon-btn{display:flex;align-items:center;justify-content:center;min-width:42px;min-height:42px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;font-size:20px;flex-shrink:0}
+    .lang-btn{padding:0 12px;font-size:14px;font-weight:600}
+
+    .workspace{max-width:1080px;margin:auto;padding:18px 20px 28px;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:20px;align-items:start}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;min-width:0;box-shadow:var(--shadow)}
+    .card-head{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .card-head h2{font-size:18px}
+    .card-head p{font-size:13px;color:var(--muted);margin-top:2px}
+    .line-badge{font-size:12px;font-weight:500;color:var(--brand);background:var(--brand-soft);padding:5px 11px;border-radius:30px;white-space:nowrap}
+    .card-body{padding:20px}
+    .sticky{position:sticky;top:calc(var(--topbar) + 16px)}
+
+    .step{display:flex;gap:11px;margin-bottom:24px}
+    .step:last-child{margin-bottom:0}
+    .step-no{display:grid;place-items:center;flex-shrink:0;width:26px;height:26px;border-radius:8px;background:var(--brand-soft);color:var(--brand);font-size:13px;font-weight:600;margin-top:2px}
+    .step-content{flex:1;min-width:0}
+    .step h3{font-size:16px;margin-bottom:12px}
+    .grid{display:grid;gap:12px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .field{min-width:0}
+    .field label{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:14px;margin-bottom:6px}
+    .field label span{font-size:12px;color:var(--muted)}
+    .control{width:100%;min-height:46px;padding:9px 12px;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;color:var(--ink);font-size:15px;transition:border-color .15s}
+    .control::placeholder{color:var(--muted-2);opacity:1}
+    .station-input[readonly]{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23727a89' stroke-width='2'%3E%3Cpath d='m4 6 5 5 5-5'/%3E%3C/svg%3E");background-position:right 10px center;background-repeat:no-repeat;padding-right:34px;text-overflow:ellipsis}
+    .control-wrap{display:flex;position:relative}
+    .control-wrap .station-input[readonly]{background-position:right 36px center;padding-right:60px}
+    .mini-btn{position:absolute;right:4px;top:4px;width:30px;height:38px;background:none;border:0;color:var(--muted);font-size:20px}
+    .mini-btn.active{color:var(--gold)}
+    .date-control{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left}
+    .date-control svg{width:20px;height:20px;flex-shrink:0;color:var(--brand)}
+    .date-control.is-empty span{color:var(--muted-2)}
+    .swap-row{display:grid;grid-template-columns:minmax(0,1fr) 38px minmax(0,1fr);gap:8px;align-items:end;margin-top:4px}
+    .swap-btn{width:38px;height:46px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;color:var(--brand);font-size:20px;padding:0}
+
+    .quick-strip{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+    .strip-head{display:flex;justify-content:flex-end;align-items:center;font-size:12px;color:var(--muted);margin-bottom:8px}
+    .text-btn{border:0;background:none;color:var(--brand);font-size:12px;padding:2px 6px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{border:1px solid var(--line-strong);background:var(--surface-2);padding:5px 11px;border-radius:9px;font-size:13px;color:var(--ink);transition:border-color .15s,color .15s,background .15s}
+    .chip:hover{border-color:var(--brand);color:var(--brand)}
+    .chip.muted{color:var(--muted);border-color:var(--line);cursor:default}
+
+    .distance-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface-2)}
+    .metric{display:flex;flex-direction:column;gap:2px}
+    .metric span{color:var(--muted);font-size:11px}
+    .metric strong{font-size:14px}
+
+    .result-body{padding:16px}
+    .empty{text-align:center;padding:30px 10px 32px}
+    .empty-icon{display:grid;place-items:center;width:56px;height:56px;background:var(--surface-2);border:1px solid var(--line);border-radius:16px;margin:0 auto 14px;font-size:26px}
+    .empty h3{font-size:18px;margin-bottom:4px}
+    .empty p{font-size:13px;color:var(--muted)}
+    .result-card{border:1px solid var(--line);border-radius:13px;overflow:hidden}
+    .result-top{background:var(--brand-soft);padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .result-top h3{font-size:16px;line-height:1.5}
+    .kicker{font-size:12px;color:var(--brand);margin-bottom:3px;font-weight:500}
+    .status{display:inline-flex;align-items:center;padding:4px 9px;border-radius:7px;font-size:12px;white-space:nowrap;font-weight:500}
+    .status.open{background:var(--success-bg);color:var(--success)}
+    .status.waiting{background:var(--warning-bg);color:var(--warning)}
+    .status.info{background:var(--surface);color:var(--muted)}
+    .result-main{padding:16px}
+    .route-line{display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-weight:500;background:var(--surface-2);padding:10px 12px;border-radius:9px}
+    .station{flex:1;text-align:center;overflow-wrap:anywhere}
+    .station small{display:block;font-size:11px;color:var(--brand);margin-top:2px;font-weight:500}
+    .arrow{color:var(--brand);flex-shrink:0}
+    .big-result{text-align:center;margin:18px 0}
+    .big-result>span{font-size:13px;color:var(--muted);display:block}
+    .big-result strong{display:block;font-size:44px;color:var(--brand);font-weight:600;line-height:1.3;margin:2px 0}
+    .big-result small{display:block;font-size:12px;color:var(--muted)}
+    .date-panel{border:1px solid var(--line);border-left:4px solid var(--brand);background:var(--surface-2);border-radius:10px;padding:13px 15px;margin-bottom:12px}
+    .date-panel .label{color:var(--muted);font-size:12px}
+    .date-panel .date{font-size:20px;font-weight:600;color:var(--ink);margin-top:3px}
+    .date-panel .time{font-size:13px;color:var(--brand);margin-top:2px;font-weight:500}
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .result-mini{display:flex;flex-direction:column;gap:2px;background:var(--surface-2);border-radius:8px;padding:9px 11px}
+    .result-mini span{font-size:11px;color:var(--muted)}
+    .result-mini strong{font-size:14px}
+    .note{border-radius:9px;padding:10px 12px;line-height:1.6;font-size:12px;margin-top:12px}
+    .note.info{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+    .note.warning{background:var(--warning-bg);color:var(--warning);border:1px solid color-mix(in srgb,var(--warning) 18%,transparent)}
+    .note.tip{background:var(--brand-soft);color:var(--brand);border:1px solid color-mix(in srgb,var(--brand) 20%,transparent)}
+    .suggest-btn{display:inline-block;margin-top:6px;background:var(--surface);border:1px solid var(--brand);color:var(--brand);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer}
+    .suggest-btn:hover{background:var(--brand);color:#fff}
+
+    .reminder-entry{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px;border-radius:11px;border:1px solid var(--line);background:var(--brand-soft)}
+    .reminder-entry svg{width:23px;height:23px;color:var(--brand);flex-shrink:0}
+    .reminder-entry>div{flex:1;min-width:0}
+    .reminder-entry b{font-size:13px;display:block}
+    .reminder-entry span{display:block;font-size:11px;color:var(--muted)}
+    .reminder-entry button{flex-shrink:0;background:#841b3a;border:0;color:#fff;border-radius:9px;min-height:40px;padding:7px 12px;font-size:13px;font-weight:500}
+    .result-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:12px}
+    .action-btn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:9px;font-size:13px;padding:7px 6px;text-decoration:none}
+    .action-btn:hover{background:var(--surface-2);border-color:var(--brand)}
+    .action-btn.primary{background:#841b3a;color:#fff;border-color:#841b3a;font-weight:500}
+    .action-btn.primary:hover{background:#64172f}
+
+    .side-section{border-top:1px solid var(--line);padding-top:14px}
+    .side-section h3{font-size:13px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .history-list{display:grid;gap:6px}
+    .history-item{display:block;text-align:left;width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2)}
+    .history-item b{display:block;font-size:13px;color:var(--ink)}
+    .history-item span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+    .footer{max-width:1080px;margin:4px auto 0;padding:18px 20px 26px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center;line-height:1.8}
+    .footer strong{color:var(--ink);font-weight:500}
+
+    .picker-dialog,.reminder-dialog{width:calc(100% - 24px);max-width:500px;margin:auto;padding:0;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 25px 70px #0004;max-height:calc(100dvh - 24px);overflow:auto}
+    .picker-dialog::backdrop,.reminder-dialog::backdrop{background:#12121e88;backdrop-filter:blur(3px)}
+    .dialog-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:18px 20px 14px;border-bottom:1px solid var(--line)}
+    .dialog-head h2{font-size:19px;line-height:1.4}
+    .dialog-head p{font-size:13px;color:var(--muted);margin-top:3px}
+    .dialog-close{flex-shrink:0;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;font-size:22px;line-height:1}
+    .dialog-body{padding:18px 20px}
+    .station-picker-body{padding:14px 18px 18px;display:flex;flex-direction:column}
+    .station-search{position:relative}
+    .station-search .control{padding-right:40px}
+    .search-clear{position:absolute;right:4px;top:4px;width:36px;height:38px;border:0;background:none;color:var(--muted);font-size:22px}
+    .station-count{font-size:12px;color:var(--muted);margin:9px 0 6px}
+    .station-options{overflow-y:auto;overscroll-behavior:contain;max-height:min(400px,52dvh);display:grid;gap:6px;padding:2px;contain:content}
+    .station-option{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;padding:9px 12px;border:1px solid var(--line);background:var(--surface-2);border-radius:10px;text-align:left;font-size:15px}
+    .station-option[aria-pressed="true"]{border-color:var(--brand);color:var(--brand);background:var(--brand-soft);font-weight:500}
+    .station-option small{color:var(--muted);font-size:12px;white-space:nowrap}
+    .station-group{font-size:12px;color:var(--brand);font-weight:500;padding:6px 2px 2px}
+    .station-no-results{padding:20px 10px;text-align:center;color:var(--muted);font-size:14px}
+
+    .date-picker-body{padding:16px 18px 18px}
+    .calendar-nav{display:flex;align-items:center;gap:7px;margin-bottom:12px}
+    .calendar-selects{display:grid;grid-template-columns:1.3fr 1fr;gap:6px;flex:1}
+    .calendar-selects .control{min-height:42px;padding:7px;font-size:14px}
+    .calendar-weekdays,.calendar-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+    .calendar-weekdays{color:var(--muted);text-align:center;font-size:12px;margin-bottom:6px}
+    .calendar-days{min-height:240px;align-content:start}
+    .calendar-day{display:grid;place-items:center;border:1px solid transparent;background:none;color:var(--ink);border-radius:9px;min-height:38px;font-size:15px;padding:4px}
+    .calendar-day.is-today{border-color:var(--brand);font-weight:600}
+    .calendar-day[aria-pressed="true"]{background:#841b3a;color:#fff;border-color:#841b3a}
+    .calendar-day:disabled{opacity:.25}
+    .calendar-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+    .calendar-footer span{font-size:12px;color:var(--muted)}
+    .calendar-key{margin-top:10px;font-size:11px;color:var(--muted)}
+
+    .reminder-route{margin-bottom:14px;padding:11px 13px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;font-size:13px}
+    .reminder-route b{display:block;font-size:14px}
+    .reminder-route span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+    .reminder-preview{margin-top:14px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);border-left:3px solid var(--brand);background:var(--brand-soft)}
+    .reminder-preview>span{display:block;font-size:12px;color:var(--muted)}
+    .reminder-preview>strong{display:block;font-size:16px;color:var(--brand);margin-top:2px}
+    .reminder-preview>small{display:block;font-size:11px;color:var(--muted)}
+    .reminder-buttons{display:grid;gap:8px;margin-top:14px}
+    .reminder-buttons .action-btn{font-size:14px;min-height:44px}
+    .reminder-error{font-size:13px;color:var(--danger);border:1px solid var(--danger);border-radius:9px;padding:9px 11px;background:var(--danger-bg);margin-top:10px}
+    .reminder-handoff{font-size:12px;line-height:1.6;margin-top:12px;padding:11px;border:1px solid var(--line);border-radius:9px;color:var(--brand);background:var(--brand-soft)}
+
+    .toast{position:fixed;z-index:150;bottom:22px;left:50%;transform:translate(-50%,12px);max-width:calc(100vw - 28px);background:#222734;color:#fff;padding:10px 18px;border-radius:11px;font-size:13px;opacity:0;visibility:hidden;transition:opacity .2s,transform .2s,visibility .2s;text-align:center;box-shadow:0 8px 25px #0003}
+    .toast.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+
+    @media (max-width:820px){
+      .workspace{grid-template-columns:1fr;padding:14px 14px 22px;gap:16px}
+      .sticky{position:static}
+      .control{font-size:16px}
+    }
+    @media (max-width:560px){
+      .topbar-inner{padding:10px 14px}
+      .brand-title{font-size:14px}
+      .brand-sub{font-size:11px}
+      .card-head{padding:15px 16px 12px}
+      .card-body{padding:16px}
+      .step .grid-2{grid-template-columns:1fr;gap:12px}
+      .step-content .swap-row{grid-template-columns:minmax(0,1fr) 34px;gap:10px}
+      .step-content .swap-row>.field:last-child{grid-column:1/2}
+      .step-content .swap-row>.swap-btn{grid-column:2;grid-row:1/3;align-self:center;width:34px}
+    }
+    @media (max-width:480px),(prefers-reduced-motion:reduce){
+      .picker-dialog::backdrop,.reminder-dialog::backdrop{backdrop-filter:none;background:rgba(0,0,0,.55)}
+      html{scroll-behavior:auto}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">PLK</span>
+        <span class="brand-text">
+          <span class="brand-title" data-i18n="brandTitle">สถานีรถไฟพิษณุโลก | เช็กวันจองตั๋วล่วงหน้า</span>
+          <span class="brand-sub" data-i18n="brandSub">ระบบคำนวณวันเปิดจำหน่ายตั๋วล่วงหน้า</span>
+        </span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn lang-btn" id="langBtn" type="button" title="Switch Language" aria-label="Switch Language"><span id="langLabel">EN</span></button>
+        <button class="icon-btn" id="themeBtn" type="button" title="สลับโหมดสี" aria-label="สลับโหมดสี"><span id="themeIcon">☾</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2 data-i18n="travelInfoTitle">ข้อมูลการเดินทาง</h2>
+          <p data-i18n="travelInfoSub">เลือกวันเดินทาง สถานี และขบวนรถ ระบบคำนวณให้อัตโนมัติ</p>
+        </div>
+        <span class="line-badge" data-i18n="lineBadge">🚆 สายเหนือ</span>
+      </div>
+      <div class="card-body">
+        <div class="step">
+          <div class="step-no">1</div>
+          <div class="step-content">
+            <h3 data-i18n="step1Title">เลือกวันที่เดินทาง</h3>
+            <div class="field">
+              <label for="travelDatePickerBtn" data-i18n="travelDateLabel">วันที่เดินทาง</label>
+              <input id="travelDate" type="hidden" />
+              <button class="control date-control is-empty" id="travelDatePickerBtn" type="button" aria-haspopup="dialog" aria-controls="thaiDateDialog">
+                <span id="travelDateLabel" data-i18n="travelDateBtnText">กดเลือกวันที่เดินทาง</span>
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-11 4h3"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="step" id="stationStep">
+          <div class="step-no">2</div>
+          <div class="step-content">
+            <h3 data-i18n="step2Title">เลือกสถานีและขบวน</h3>
+            
+            <div class="field">
+              <div class="strip-head" style="margin-top:2px; margin-bottom:4px">
+                <button class="text-btn" id="clearRouteBtn" type="button" data-i18n="clearRouteBtn">ล้างสถานี</button>
+              </div>
+            </div>
+
+            <div class="swap-row">
+              <div class="field">
+                <label for="passOrigin"><span data-i18n="originLabel">สถานีต้นทาง</span> <span data-i18n="originSub">ต้นทางผู้โดยสาร</span></label>
+                <div class="control-wrap">
+                  <input class="control station-input" id="passOrigin" readonly role="button" aria-haspopup="dialog" aria-controls="stationPickerDialog" autocomplete="off" data-i18n-placeholder="originPlaceholder" placeholder="กดเลือกสถานีต้นทาง" />
+                  <button class="mini-btn" id="favOriginBtn" type="button" title="บันทึกสถานีโปรด">☆</button>
+                </div>
+              </div>
+              <button class="swap-btn" id="swapStationsBtn" type="button" title="สลับสถานีต้นทางและสถานีปลายทาง">⇄</button>
+              <div class="field">
+                <label for="passDest"><span data-i18n="destLabel">สถานีปลายทาง</span> <span data-i18n="destSub">ปลายทางผู้โดยสาร</span></label>
+                <div class="control-wrap">
+                  <input class="control station-input" id="passDest" readonly role="button" aria-haspopup="dialog" aria-controls="stationPickerDialog" autocomplete="off" data-i18n-placeholder="destPlaceholder" placeholder="กดเลือกสถานีปลายทาง" />
+                  <button class="mini-btn" id="favDestBtn" type="button" title="บันทึกสถานีโปรด">☆</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="quick-strip" id="favoriteStrip">
+              <div class="strip-head">
+                <span data-i18n="favTitle">⭐ สถานีที่บันทึกไว้เพิ่มเติม</span>
+                <button class="text-btn" id="clearFavoritesBtn" type="button" data-i18n="clearAllBtn">ล้างทั้งหมด</button>
+              </div>
+              <div class="chips" id="favoriteChips"></div>
+            </div>
+
+            <div class="field" style="margin-top:16px;">
+              <label for="selectedTrain"><span data-i18n="trainLabel">ขบวนรถไฟ</span> <span data-i18n="trainSub">ขบวนที่จอดรับ-ส่งตามสถานีที่เลือก</span></label>
+              <select class="control" id="selectedTrain" disabled></select>
+            </div>
+
+            <div class="distance-summary hidden" id="distanceSummary">
+              <div class="metric"><span data-i18n="metricTotal">ระยะขบวนรถ</span><strong id="totalKmText">-</strong></div>
+              <div class="metric"><span data-i18n="metricPass">ระยะเดินทาง</span><strong id="passengerKmText">-</strong></div>
+              <div class="metric"><span data-i18n="metricRatio">สัดส่วนระยะทาง</span><strong id="percentageText">-</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card sticky">
+      <div class="card-head">
+        <div>
+          <h2><span data-i18n="resultCardTitle">วันเริ่มซื้อตั๋ว</span></h2>
+          <p data-i18n="resultCardSub">ตรวจสอบวันแรกที่เปิดให้จองล่วงหน้า</p>
+        </div>
+      </div>
+      <div class="result-body" id="bookingResult" role="status" aria-live="polite" aria-atomic="true"></div>
+      <div class="card-body" style="padding-top:0">
+        <div class="side-section">
+          <h3><span>🕘 <span data-i18n="historyTitle">ประวัติที่เช็กล่าสุด</span></span><button class="text-btn" id="clearBookingHistoryBtn" type="button" data-i18n="clearHistoryBtn">ล้าง</button></h3>
+          <div class="history-list" id="bookingHistory"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <strong data-i18n="footerDev">พัฒนาโดย toretomet29</strong><br>
+    <span data-i18n="footerContact">สอบถามข้อมูลเพิ่มเติม สถานีรถไฟพิษณุโลก โทร. 055258005 หรือสายด่วนการรถไฟฯ โทร. 1690</span>
+  </footer>
+
+  <dialog class="reminder-dialog" id="reminderDialog" aria-labelledby="reminderTitle">
+    <div class="dialog-head">
+      <div>
+        <h2 id="reminderTitle" data-i18n="remindDlgTitle">ตั้งเตือนวันเปิดจอง</h2>
+        <p data-i18n="remindDlgSub">เพิ่มนัดหมายแจ้งเตือนลงในปฏิทินมือถือ</p>
+      </div>
+      <button class="dialog-close" id="closeReminderBtn" type="button" aria-label="ปิดหน้าตั้งเตือน">×</button>
+    </div>
+    <div class="dialog-body">
+      <div class="reminder-route" id="reminderRoute"></div>
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="reminderLead" data-i18n="remindLeadLabel">เตือนเมื่อไหร่</label>
+          <select class="control" id="reminderLead">
+            <option value="0" data-i18n="remindOpt0">วันเปิดจอง</option>
+            <option value="1" data-i18n="remindOpt1">ก่อนเปิดจอง 1 วัน</option>
+            <option value="2" data-i18n="remindOpt2">ก่อนเปิดจอง 2 วัน</option>
+            <option value="custom" data-i18n="remindOptCustom">เลือกวันเอง</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="reminderTime" data-i18n="remindTimeLabel">เวลาที่ต้องการเตือน</label>
+          <input class="control" id="reminderTime" type="time" required value="08:30" />
+        </div>
+      </div>
+      <div class="field hidden" id="reminderCustomBox" style="margin-top:12px">
+        <label for="reminderDatePickerBtn" data-i18n="remindCustomDateLabel">วันที่ต้องการเตือน</label>
+        <input id="reminderDate" type="hidden" />
+        <button class="control date-control is-empty" id="reminderDatePickerBtn" type="button" aria-haspopup="dialog" aria-controls="thaiDateDialog">
+          <span id="reminderDateLabel" data-i18n="travelDateBtnText">กดเลือกวันที่</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-11 4h3"/></svg>
+        </button>
+      </div>
+      <div class="reminder-preview" id="reminderPreview" aria-live="polite"></div>
+      <div class="reminder-error hidden" id="reminderError" role="alert"></div>
+      <div class="reminder-buttons">
+        <button class="action-btn primary" type="button" id="googleCalendarBtn" data-i18n="gcalBtn">📅 เพิ่มใน Google Calendar (แนะนำ)</button>
+        <button class="action-btn" type="button" id="copyReminderBtn" data-i18n="copyRemindBtn">📋 คัดลอกข้อความแจ้งเตือนไว้ส่งในแชท</button>
+      </div>
+      <div class="reminder-handoff hidden" id="reminderHandoff" role="status" aria-live="polite"></div>
+    </div>
+  </dialog>
+
+  <dialog class="picker-dialog" id="stationPickerDialog" aria-labelledby="stationPickerTitle">
+    <div class="dialog-head">
+      <div>
+        <h2 id="stationPickerTitle" data-i18n="pickerDlgTitle">เลือกสถานี</h2>
+        <p id="stationPickerContext" data-i18n="pickerDlgSub">กรุณาเลือกสถานี</p>
+      </div>
+      <button class="dialog-close" id="closeStationPickerBtn" type="button" aria-label="ปิดรายการสถานี">×</button>
+    </div>
+    <div class="station-picker-body">
+      <div class="station-search">
+        <label class="sr-only" for="stationSearch">ค้นหาชื่อสถานี</label>
+        <input class="control" id="stationSearch" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="พิมพ์ค้นหาชื่อสถานี..." autocomplete="off" inputmode="search">
+        <button class="search-clear hidden" id="clearStationSearchBtn" type="button" aria-label="ล้างคำค้นหา">×</button>
+      </div>
+      <p class="station-count" id="stationCount" aria-live="polite"></p>
+      <div class="station-options" id="stationOptions" role="group" aria-label="รายการสถานี"></div>
+    </div>
+  </dialog>
+
+  <dialog class="picker-dialog" id="thaiDateDialog" aria-labelledby="thaiDateTitle">
+    <div class="dialog-head">
+      <div>
+        <h2 id="thaiDateTitle" data-i18n="calendarDlgTitle">เลือกวันที่เดินทาง</h2>
+        <p data-i18n="calendarDlgSub">เดือนภาษาไทย · ปี พ.ศ.</p>
+      </div>
+      <button class="dialog-close" id="closeThaiDateBtn" type="button" aria-label="ปิดปฏิทิน">×</button>
+    </div>
+    <div class="date-picker-body">
+      <div class="calendar-nav">
+        <button class="icon-btn" id="thaiCalendarPrev" type="button" aria-label="เดือนก่อนหน้า">‹</button>
+        <div class="calendar-selects">
+          <select class="control" id="thaiCalendarMonth" aria-label="เดือน"></select>
+          <select class="control" id="thaiCalendarYear" aria-label="ปี"></select>
+        </div>
+        <button class="icon-btn" id="thaiCalendarNext" type="button" aria-label="เดือนถัดไป">›</button>
+      </div>
+      <div class="calendar-weekdays" id="calendarWeekdays" aria-hidden="true"></div>
+      <div class="calendar-days" id="thaiCalendarDays" role="group" aria-label="เลือกวัน"></div>
+      <div class="calendar-key" id="calendarKeyText">กรอบสีคือวันนี้ · วันที่จางคือวันที่ผ่านมาแล้ว</div>
+      <div class="calendar-footer">
+        <span id="thaiCalendarSelection" aria-live="polite"></span>
+        <button class="action-btn" id="thaiCalendarToday" type="button" data-i18n="todayBtn">เลือกวันนี้</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+const TRANSLATIONS = {
+  th: {
+    brandTitle: 'สถานีรถไฟพิษณุโลก | เช็กวันจองตั๋วล่วงหน้า',
+    brandSub: 'ระบบคำนวณวันเปิดจำหน่ายตั๋วล่วงหน้า',
+    travelInfoTitle: 'ข้อมูลการเดินทาง',
+    travelInfoSub: 'เลือกวันเดินทาง สถานี และขบวนรถ ระบบคำนวณให้อัตโนมัติ',
+    lineBadge: '🚆 สายเหนือ',
+    step1Title: 'เลือกวันที่เดินทาง',
+    travelDateLabel: 'วันที่เดินทาง',
+    travelDateBtnText: 'กดเลือกวันที่เดินทาง',
+    step2Title: 'เลือกสถานีและขบวน',
+    clearRouteBtn: 'ล้างสถานี',
+    originLabel: 'สถานีต้นทาง',
+    originSub: 'ต้นทางผู้โดยสาร',
+    originPlaceholder: 'กดเลือกสถานีต้นทาง',
+    destLabel: 'สถานีปลายทาง',
+    destSub: 'ปลายทางผู้โดยสาร',
+    destPlaceholder: 'กดเลือกสถานีปลายทาง',
+    favTitle: '⭐ สถานีที่บันทึกไว้เพิ่มเติม',
+    clearAllBtn: 'ล้างทั้งหมด',
+    trainLabel: 'ขบวนรถไฟ',
+    trainSub: 'ขบวนที่จอดรับ-ส่งตามสถานีที่เลือก',
+    metricTotal: 'ระยะขบวนรถ',
+    metricPass: 'ระยะเดินทาง',
+    metricRatio: 'สัดส่วนระยะทาง',
+    resultCardTitle: 'วันเริ่มซื้อตั๋ว',
+    resultCardSub: 'ตรวจสอบวันแรกที่เปิดให้จองล่วงหน้า',
+    historyTitle: 'ประวัติที่เช็กล่าสุด',
+    clearHistoryBtn: 'ล้าง',
+    footerDev: 'พัฒนาโดย toretomet29',
+    footerContact: 'สอบถามข้อมูลเพิ่มเติม สถานีรถไฟพิษณุโลก โทร. 055258005 หรือสายด่วนการรถไฟฯ โทร. 1690',
+    remindDlgTitle: 'ตั้งเตือนวันเปิดจอง',
+    remindDlgSub: 'เพิ่มนัดหมายแจ้งเตือนลงในปฏิทินมือถือ',
+    remindLeadLabel: 'เตือนเมื่อไหร่',
+    remindOpt0: 'วันเปิดจอง',
+    remindOpt1: 'ก่อนเปิดจอง 1 วัน',
+    remindOpt2: 'ก่อนเปิดจอง 2 วัน',
+    remindOptCustom: 'เลือกวันเอง',
+    remindTimeLabel: 'เวลาที่ต้องการเตือน',
+    remindCustomDateLabel: 'วันที่ต้องการเตือน',
+    gcalBtn: '📅 เพิ่มใน Google Calendar (แนะนำ)',
+    copyRemindBtn: '📋 คัดลอกข้อความแจ้งเตือนไว้ส่งในแชท',
+    pickerDlgTitle: 'เลือกสถานี',
+    pickerDlgSub: 'กรุณาเลือกสถานี',
+    searchPlaceholder: 'พิมพ์ค้นหาชื่อสถานี...',
+    calendarDlgTitle: 'เลือกวันที่เดินทาง',
+    calendarDlgSub: 'เดือนภาษาไทย · ปี พ.ศ.',
+    todayBtn: 'เลือกวันนี้',
+    weekdays: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+    keyText: 'กรอบสีคือวันนี้ · วันที่จางคือวันที่ผ่านมาแล้ว',
+    emptyTitle: 'พร้อมคำนวณวันเปิดจอง',
+    emptySub: 'กรุณาเลือกวันที่เดินทาง สถานีต้นทาง-ปลายทาง และขบวนรถให้ครบ<br>ผลลัพธ์จะแสดงอัตโนมัติทันที',
+    errorTitle: 'ข้อมูลยังไม่ครบถ้วน',
+    nonReservedHeader: 'ซื้อในวันเดินทาง',
+    nonReservedSub: 'ไม่ต้องจองล่วงหน้า',
+    nonReservedBadge: '🎫 ซื้อวันเดินทาง',
+    nonReservedDesc: 'ขบวนรถธรรมดาและรถท้องถิ่นเป็นแบบไม่สำรองที่นั่ง สามารถติดต่อซื้อตั๋วที่ช่องจำหน่ายตั๋วสถานีในวันเดินทางได้เลยครับ',
+    nonReservedNotice: 'จำหน่ายที่สถานี ก่อนขบวนรถออกไม่เกิน 2 ชั่วโมง',
+    remindTravelBtn: 'ตั้งเตือนวันเดินทาง',
+    remindBookingBtn: 'ตั้งเตือนวันเปิดจอง',
+    dticketBtn: 'จองตั๋ว D-Ticket',
+    copyResBtn: 'คัดลอกผล',
+    shareResBtn: 'แชร์ต่อ',
+    maxAdvance: 'สามารถซื้อตั๋วล่วงหน้าได้สูงสุด',
+    calcRatio: 'คำนวณจากสัดส่วนระยะทาง',
+    firstTicketDate: 'วันแรกที่เริ่มเปิดขายตั๋ว',
+    openTimePrefix: 'ตั้งแต่เวลา',
+    openTimeSuffix: 'น. เป็นต้นไป',
+    trainDistLabel: 'ระยะทางขบวนรถ',
+    passDistLabel: 'ระยะทางผู้โดยสาร',
+    suggestionTip: 'อยากจองล่วงหน้า 90 วัน? แนะนำปรับช่วงสถานีเป็น',
+    suggestBtnText: '👉 คลิกเพื่อใช้สถานีแนะนำนี้',
+    generalTip: 'หากต้องการจองล่วงหน้าให้นานขึ้น (สูงสุด 90 วัน) แนะนำให้เลือกขยายสถานีต้นทางหรือปลายทางให้มีระยะทางครอบคลุม >= 60% ของระยะทางรวมขบวนรถครับ',
+    statusOpen: 'เปิดจองแล้ว',
+    statusOpenDesc: 'สามารถตรวจสอบที่นั่งใน D-Ticket หรือที่สถานีได้ทันที',
+    statusToday: 'เปิดวันนี้',
+    statusTomor: 'เปิดพรุ่งนี้',
+    statusDays: 'อีก',
+    statusDaysSuffix: 'วัน',
+    statusStartOn: 'เริ่มเปิดจอง',
+    statusAtTime: 'เวลา',
+    statusSuffixText: 'น.',
+    stationGroupPinned: '📍 สถานีหลัก / สถานีโปรด',
+    stationGroupAll: 'สถานีทั้งหมดในเส้นทาง',
+    noStationsFound: 'ไม่พบชื่อสถานีที่ค้นหา',
+    toastRestored: 'เรียกคืนข้อมูลแล้ว',
+    toastFavAdded: 'บันทึกสถานีโปรดแล้ว',
+    toastFavRemoved: 'นำออกจากสถานีโปรดแล้ว',
+    toastFavCleared: 'ล้างสถานีโปรดแล้ว',
+    toastHistCleared: 'ล้างประวัติแล้ว',
+    toastCopied: 'คัดลอกข้อความแล้ว วางส่งในแชทได้เลย',
+    toastRemindCopied: 'คัดลอกข้อความเตือนแล้ว ส่งเก็บไว้ในแชท LINE ได้เลย',
+    toastRouteCleared: 'ล้างสถานีแล้ว',
+    toastSwap: 'สลับสถานีต้นทาง–ปลายทางแล้ว',
+    toastSuggest: 'ปรับสถานีตามคำแนะนำแล้ว',
+    noHistory: 'ยังไม่มีประวัติการคำนวณ',
+    noTrainSelected: '- กรุณาเลือกขบวนรถ -',
+    noTrainOption: '- ไม่มีขบวนรถที่ให้บริการในทิศทางนี้ -',
+    noTrainPrompt: '- กรุณาเลือกสถานีต้นทางและปลายทางก่อน -',
+    pickerCount: 'สถานี · แตะเลือกได้เลย',
+    pickerFound: 'พบ',
+    pickerFoundEnd: 'สถานี'
+  },
+  en: {
+    brandTitle: 'Phitsanulok Railway Station | Advance Booking',
+    brandSub: 'Advance Ticket Booking Calculator',
+    travelInfoTitle: 'Journey Information',
+    travelInfoSub: 'Select travel date, stations, and train. System calculates automatically.',
+    lineBadge: '🚆 Northern Line',
+    step1Title: 'Select Travel Date',
+    travelDateLabel: 'Travel Date',
+    travelDateBtnText: 'Click to select travel date',
+    step2Title: 'Select Stations & Train',
+    clearRouteBtn: 'Clear Stations',
+    originLabel: 'Origin Station',
+    originSub: 'Passenger Origin',
+    originPlaceholder: 'Select origin station',
+    destLabel: 'Destination Station',
+    destSub: 'Passenger Destination',
+    destPlaceholder: 'Select destination station',
+    favTitle: '⭐ Saved Favorite Stations',
+    clearAllBtn: 'Clear All',
+    trainLabel: 'Train',
+    trainSub: 'Trains stopping at selected stations',
+    metricTotal: 'Train Distance',
+    metricPass: 'Journey Distance',
+    metricRatio: 'Distance Ratio',
+    resultCardTitle: 'Ticket Opening Date',
+    resultCardSub: 'Check the first day advance booking opens',
+    historyTitle: 'Recent History',
+    clearHistoryBtn: 'Clear',
+    footerDev: 'Developed by toretomet29',
+    footerContact: 'More info: Phitsanulok Station Tel. 055258005 or SRT Hotline 1690',
+    remindDlgTitle: 'Set Booking Reminder',
+    remindDlgSub: 'Add notification event to your mobile calendar',
+    remindLeadLabel: 'Remind me',
+    remindOpt0: 'On opening day',
+    remindOpt1: '1 day before',
+    remindOpt2: '2 days before',
+    remindOptCustom: 'Custom date',
+    remindTimeLabel: 'Notification Time',
+    remindCustomDateLabel: 'Reminder Date',
+    gcalBtn: '📅 Add to Google Calendar (Recommended)',
+    copyRemindBtn: '📋 Copy reminder text to chat',
+    pickerDlgTitle: 'Select Station',
+    pickerDlgSub: 'Please select a station',
+    searchPlaceholder: 'Type to search station...',
+    calendarDlgTitle: 'Select Travel Date',
+    calendarDlgSub: 'Gregorian Calendar · AD',
+    todayBtn: 'Select Today',
+    weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    keyText: 'Highlighted box is today · Faded dates are past days',
+    emptyTitle: 'Ready to Calculate',
+    emptySub: 'Please select travel date, origin, destination, and train.<br>Results will appear automatically.',
+    errorTitle: 'Incomplete Information',
+    nonReservedHeader: 'Buy on Travel Day',
+    nonReservedSub: 'No advance booking required',
+    nonReservedBadge: '🎫 Buy on Travel Day',
+    nonReservedDesc: 'Ordinary and local trains are non-reserved seating. You can purchase tickets at the station ticket counter on the day of travel.',
+    nonReservedNotice: 'Available at station counter, up to 2 hours before departure.',
+    remindTravelBtn: 'Remind Travel Date',
+    remindBookingBtn: 'Remind Booking Date',
+    dticketBtn: 'Book on D-Ticket',
+    copyResBtn: 'Copy Result',
+    shareResBtn: 'Share',
+    maxAdvance: 'Maximum advance booking',
+    calcRatio: 'Calculated from distance ratio',
+    firstTicketDate: 'First day ticket sales open',
+    openTimePrefix: 'From',
+    openTimeSuffix: 'onwards',
+    trainDistLabel: 'Train Distance',
+    passDistLabel: 'Passenger Distance',
+    suggestionTip: 'Want 90 days advance booking? Recommended route:',
+    suggestBtnText: '👉 Click to use suggested stations',
+    generalTip: 'To book further in advance (up to 90 days), expand your origin or destination to cover >= 60% of the total train route distance.',
+    statusOpen: 'Booking Open',
+    statusOpenDesc: 'Check seats on D-Ticket or at the station immediately.',
+    statusToday: 'Opens Today',
+    statusTomor: 'Opens Tomorrow',
+    statusDays: 'In',
+    statusDaysSuffix: 'days',
+    statusStartOn: 'Booking opens',
+    statusAtTime: 'at',
+    statusSuffixText: '',
+    stationGroupPinned: '📍 Main / Favorite Stations',
+    stationGroupAll: 'All Stations on Route',
+    noStationsFound: 'No stations found',
+    toastRestored: 'Data restored',
+    toastFavAdded: 'Added to favorites',
+    toastFavRemoved: 'Removed from favorites',
+    toastFavCleared: 'Cleared favorites',
+    toastHistCleared: 'Cleared history',
+    toastCopied: 'Text copied to clipboard',
+    toastRemindCopied: 'Reminder text copied to chat',
+    toastRouteCleared: 'Stations cleared',
+    toastSwap: 'Swapped origin and destination',
+    toastSuggest: 'Adjusted stations by suggestion',
+    noHistory: 'No calculation history yet',
+    noTrainSelected: '- Please select a train -',
+    noTrainOption: '- No trains available in this direction -',
+    noTrainPrompt: '- Please select origin and destination first -',
+    pickerCount: 'stations · Tap to select',
+    pickerFound: 'Found',
+    pickerFoundEnd: 'stations'
+  }
+};
+
+const APP_CONFIG = Object.freeze({
+  dticketUrl: 'https://dticket.railway.co.th/DTicketPublicWeb/home/Home?openExternalBrowser=1',
+  hotline: '1690',
+  historyLimit: 6
+});
+const BOOKING_RULES = Object.freeze({
+  standardOpenTime: '08:30',
+  nonReservedTextTH: 'ซื้อตั๋วในวันเดินทาง ก่อนขบวนรถออกไม่เกิน 2 ชั่วโมง',
+  nonReservedTextEN: 'Purchase tickets on travel day, up to 2 hours before departure.'
+});
+const QUICK_STATIONS = Object.freeze(['พิษณุโลก', 'กรุงเทพอภิวัฒน์', 'เชียงใหม่']);
+const REMINDER_ZONE = 'Asia/Bangkok';
+const DAY_MS = 86400000;
+const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const ENG_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const STATION_FIELD_LABELS = { passOrigin: 'originLabel', passDest: 'destLabel' };
+const LS_KEY = { history: 'plkNorthBookingHistory', fav: 'plkNorthFavoriteStations', theme: 'plkNorthTheme', lang: 'plkNorthLang' };
+
+const northStations = [
+  ['กรุงเทพ (หัวลำโพง)',0],['สามเสน',5],['ชุมทางบางซื่อ',8],['กรุงเทพอภิวัฒน์',8],['บางเขน',13],['หลักสี่',18],['ดอนเมือง',22],['หลักหก',26],
+  ['รังสิต',30],['คลองหนึ่ง',34],['เชียงราก',37],['มหาวิทยาลัยธรรมศาสตร์',40],['นวนคร',44],['เชียงรากน้อย',46],['คลองพุทรา',52],['บางปะอิน',58],
+  ['บ้านโพ',63],['อยุธยา',71],['บ้านม้า',75],['มาบพระจันทร์',79],['พระแก้ว',85],['ชุมทางบ้านภาชี',90],['หนองวิวัฒน์',96],['ท่าเรือ',103],
+  ['บ้านหมอ',109],['หนองโดน',117],['บ้านกลับ',122],['บ้านป่าหวาย',127],['ลพบุรี',133],['ลพบุรี 2 (ท่าวุ้ง)',137],['โคกกะเทียม',144],['หนองเต่า',150],
+  ['หนองทรายขาว',155],['บ้านหมี่',161],['ห้วยแก้ว',166],['จันเสน',174],['ช่องแค',180],['ทะเลหว้า',187],['บ้านตาคลี',193],['หนองโพ',211],
+  ['หัวงิ้ว',217],['เนินมะกอก',225],['เขาทอง',235],['นครสวรรค์',246],['ปากน้ำโพ',251],['ทับกฤช',264],['คลองปลากด',271],['ชุมแสง',280],
+  ['วังกระพี้',290],['บางมูลนาก',297],['หอไกร',304],['ดงตะขบ',310],['ตะพานหิน',319],['ห้วยเกตุ',325],['หัวดง',333],['วังกรด',339],
+  ['พิจิตร',347],['บางกระทุ่ม',362],['แม่เทียบ',366],['บ้านใหม่',375],['บึงพระ',382],['พิษณุโลก',389],['บ้านเต็งหนาม',394],['บ้านตูม',400],
+  ['แควน้อย',405],['พรหมพิราม',415],['หนองตม',423],['บ้านบุ่ง',433],['บ้านโคน',437],['พิชัย',448],['ไร่อ้อย',454],['ชุมทางบ้านดารา',458],
+  ['ท่าสัก',462],['ตรอน',470],['วังกะพี้',477],['อุตรดิตถ์',485],['ศิลาอาสน์',488],['ท่าเสา',489],['บ้านด่าน',498],['ปางต้นผึ้ง',509],
+  ['เขาพลึง',517],['ห้วยไร่',521],['ไร่เกล็ดดาว',525],['แม่พวก',528],['เด่นชัย',534],['ปากปาน',538],['แก่งหลวง',547],['ห้วยแม่ต้า',554],
+  ['บ้านปิน',564],['ผาคัน',578],['ผาคอ',581],['ปางป๋วย',591],['แม่จาง',600],['แม่เมาะ',609],['ห้วยรากไม้',615],['ศาลาผาลาด',622],
+  ['แม่ทะ',628],['หนองวัวเฒ่า',637],['นครลำปาง',642],['บ่อแฮ้ว',647],['ห้างฉัตร',655],['ปางม่วง',661],['ห้วยเรียน',665],['แม่ตานน้อย',671],
+  ['ขุนตาน',683],['ทาชมภู',692],['ศาลาแม่ทา',701],['หนองหล่ม',713],['ลำพูน',729],['ป่าเส้า',735],['สารภี',743],['เชียงใหม่',751]
+].map(([name, km]) => ({ name, km }));
+
+const STATION_EN_MAP = {
+  'พิษณุโลก': 'Phitsanulok', 'กรุงเทพอภิวัฒน์': 'Krung Thep Aphiwat', 'เชียงใหม่': 'Chiang Mai',
+  'กรุงเทพ (หัวลำโพง)': 'Bangkok (Hua Lamphong)', 'สามเสน': 'Sam Sen', 'ชุมทางบางซื่อ': 'Bang Sue Junction',
+  'บางเขน': 'Bang Khen', 'หลักสี่': 'Lak Si', 'ดอนเมือง': 'Don Mueang', 'หลักหก': 'Lak Hok',
+  'รังสิต': 'Rangsit', 'คลองหนึ่ง': 'Khlong Nueng', 'เชียงราก': 'Chiang Rak', 'มหาวิทยาลัยธรรมศาสตร์': 'Thammasat University',
+  'นวนคร': 'Nava Nakhon', 'เชียงรากน้อย': 'Chiang Rak Noi', 'คลองพุทรา': 'Khlong Phutsa', 'บางปะอิน': 'Bang Pa-in',
+  'บ้านโพ': 'Ban Pho', 'อยุธยา': 'Ayutthaya', 'บ้านม้า': 'Ban Ma', 'มาบพระจันทร์': 'Map Phra Chan',
+  'พระแก้ว': 'Phra Kaeo', 'ชุมทางบ้านภาชี': 'Ban Phachi Junction', 'หนองวิวัฒน์': 'Nong Wiwat', 'ท่าเรือ': 'Tha Ruea',
+  'บ้านหมอ': 'Ban Mo', 'หนองโดน': 'Nong Don', 'บ้านกลับ': 'Ban Klap', 'บ้านป่าหวาย': 'Ban Pa Wai',
+  'ลพบุรี': 'Lop Buri', 'ลพบุรี 2 (ท่าวุ้ง)': 'Lop Buri 2', 'โคกกะเทียม': 'Khok Kathiam', 'หนองเต่า': 'Nong Tao',
+  'หนองทรายขาว': 'Nong Sai Khao', 'บ้านหมี่': 'Ban Mi', 'ห้วยแก้ว': 'Huai Kaeo', 'จันเสน': 'Chan Sen',
+  'ช่องแค': 'Chong Khae', 'ทะเลหว้า': 'Thale Wa', 'บ้านตาคลี': 'Ban Takli', 'หนองโพ': 'Nong Pho',
+  'หัวงิ้ว': 'Hua Ngiu', 'เนินมะกอก': 'Noen Makok', 'เขาทอง': 'Khao Thong', 'นครสวรรค์': 'Nakhon Sawan',
+  'ปากน้ำโพ': 'Pak Nam Pho', 'ทับกฤช': 'Thap Krit', 'คลองปลากด': 'Khlong Pla Kot', 'ชุมแสง': 'Chum Saeng',
+  'วังกระพี้': 'Wang Kaphi', 'บางมูลนาก': 'Bang Mun Nak', 'หอไกร': 'Ho Krai', 'ดงตะขบ': 'Dong Takhop',
+  'ตะพานหิน': 'Taphan Hin', 'ห้วยเกตุ': 'Huai Ket', 'หัวดง': 'Hua Dong', 'วังกรด': 'Wang Krot',
+  'พิจิตร': 'Phichit', 'บางกระทุ่ม': 'Bang Krathum', 'แม่เทียบ': 'Mae Thiap', 'บ้านใหม่': 'Ban Mai',
+  'บึงพระ': 'Bueng Phra', 'บ้านเต็งหนาม': 'Ban Teng Nam', 'บ้านตูม': 'Ban Tum', 'แควน้อย': 'Khwae Noi',
+  'พรหมพิราม': 'Phrom Phiram', 'หนองตม': 'Nong Tom', 'บ้านบุ่ง': 'Ban Bung', 'บ้านโคน': 'Ban Khon',
+  'พิชัย': 'Phichai', 'ไร่อ้อย': 'Rai Oi', 'ชุมทางบ้านดารา': 'Ban Dara Junction', 'ท่าสัก': 'Tha Sak',
+  'ตรอน': 'Tron', 'วังกะพี้': 'Wang Kaphi', 'อุตรดิตถ์': 'Uttaradit', 'ศิลาอาสน์': 'Sila At',
+  'ท่าเสา': 'Tha Sao', 'บ้านด่าน': 'Ban Dan', 'ปางต้นผึ้ง': 'Pang Ton Phueng', 'เขาพลึง': 'Khao Phlueng',
+  'ห้วยไร่': 'Huai Rai', 'ไร่เกล็ดดาว': 'Rai Klet Dao', 'แม่พวก': 'Mae Phuak', 'เด่นชัย': 'Den Chai',
+  'ปากปาน': 'Pak Pan', 'แก่งหลวง': 'Kaeng Luang', 'ห้วยแม่ต้า': 'Huai Mae Ta', 'บ้านปิน': 'Ban Pin',
+  'ผาคัน': 'Pha Khan', 'ผาคอ': 'Pha Kho', 'ปางป๋วย': 'Pang Puai', 'แม่จาง': 'Mae Chang',
+  'แม่เมาะ': 'Mae Mo', 'ห้วยรากไม้': 'Huai Rak Mai', 'ศาลาผาลาด': 'Sala Pha Lat', 'แม่ทะ': 'Mae Tha',
+  'หนองวัวเฒ่า': 'Nong Wua Thao', 'นครลำปาง': 'Lampang', 'บ่อแฮ้ว': 'Bo Haeo', 'ห้างฉัตร': 'Hang Chat',
+  'ปางม่วง': 'Pang Muang', 'ห้วยเรียน': 'Huai Rian', 'แม่ตานน้อย': 'Mae Tan Noi', 'ขุนตาน': 'Khun Tan',
+  'ทาชมภู': 'Tha Chom Phu', 'แม่ทา': 'Mae Tha', 'ศาลาแม่ทา': 'Sala Mae Tha', 'หนองหล่ม': 'Nong Lom',
+  'ลำพูน': 'Lamphun', 'ป่าเส้า': 'Pa Sao', 'ป่าแดด': 'Pa Daet', 'สารภี': 'Saraphi'
+};
+
+const getLang = () => document.documentElement.dataset.lang || 'th';
+const t = key => TRANSLATIONS[getLang()][key] || key;
+const formatStationName = name => getLang() === 'en' ? (STATION_EN_MAP[name] || name) : name;
+
+function formatTrainName(name) {
+  if (getLang() === 'th') return name;
+  return name
+    .replace('ด่วนพิเศษอุตราวิถี', 'Special Express "Uttrawithi"')
+    .replace('ด่วนพิเศษ', 'Special Express')
+    .replace('ด่วน', 'Express')
+    .replace('เร็ว', 'Rapid')
+    .replace('ธรรมดา', 'Ordinary')
+    .replace('ท้องถิ่น', 'Local')
+    .replace('กรุงเทพอภิวัฒน์', 'Krung Thep Aphiwat')
+    .replace('เชียงใหม่', 'Chiang Mai')
+    .replace('กรุงเทพ (หัวลำโพง)', 'Bangkok (Hua Lamphong)')
+    .replace('เด่นชัย', 'Den Chai')
+    .replace('ลพบุรี', 'Lop Buri')
+    .replace('ศิลาอาสน์', 'Sila At')
+    .replace('นครสวรรค์', 'Nakhon Sawan')
+    .replace('บ้านตาคลี', 'Ban Takli');
+}
+
+const northSchedules = [
+  { 
+    id: '7', name: '7 ด่วนพิเศษ กรุงเทพอภิวัฒน์–เชียงใหม่', origin: 'กรุงเทพอภิวัฒน์', dest: 'เชียงใหม่',
+    stops: ['กรุงเทพอภิวัฒน์','ดอนเมือง','รังสิต','อยุธยา','ลพบุรี 2 (ท่าวุ้ง)','นครสวรรค์','ตะพานหิน','พิจิตร','พิษณุโลก','อุตรดิตถ์','ศิลาอาสน์','เด่นชัย','บ้านปิน','นครลำปาง','ขุนตาน','ลำพูน','เชียงใหม่'],
+    schedule: {
+      'กรุงเทพอภิวัฒน์': { dep: '07:30' }, 'ดอนเมือง': { arr: '07:43', dep: '07:45' }, 'รังสิต': { arr: '07:53', dep: '07:54' },
+      'อยุธยา': { arr: '08:21', dep: '08:23' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '09:06', dep: '09:08' }, 'นครสวรรค์': { arr: '10:16', dep: '10:19' },
+      'ตะพานหิน': { arr: '11:04', dep: '11:05' }, 'พิจิตร': { arr: '11:22', dep: '11:23' }, 'พิษณุโลก': { arr: '11:48', dep: '11:58' },
+      'อุตรดิตถ์': { arr: '12:59', dep: '13:02' }, 'ศิลาอาสน์': { arr: '13:05', dep: '13:06' }, 'เด่นชัย': { arr: '13:53', dep: '13:54' },
+      'บ้านปิน': { arr: '14:24', dep: '14:25' }, 'นครลำปาง': { arr: '15:56', dep: '15:59' }, 'ขุนตาน': { arr: '16:49', dep: '16:50' },
+      'ลำพูน': { arr: '17:31', dep: '17:32' }, 'เชียงใหม่': { arr: '17:50' }
+    }
+  },
+  { 
+    id: '8', name: '8 ด่วนพิเศษ เชียงใหม่–กรุงเทพอภิวัฒน์', origin: 'เชียงใหม่', dest: 'กรุงเทพอภิวัฒน์',
+    stops: ['เชียงใหม่','ลำพูน','ขุนตาน','นครลำปาง','บ้านปิน','เด่นชัย','ศิลาอาสน์','อุตรดิตถ์','พิษณุโลก','พิจิตร','ตะพานหิน','ปากน้ำโพ','นครสวรรค์','ลพบุรี 2 (ท่าวุ้ง)','อยุธยา','รังสิต','ดอนเมือง','กรุงเทพอภิวัฒน์'],
+    schedule: {
+      'เชียงใหม่': { dep: '07:30' }, 'ลำพูน': { arr: '07:48', dep: '07:49' }, 'ขุนตาน': { arr: '08:35', dep: '08:36' },
+      'นครลำปาง': { arr: '09:27', dep: '09:30' }, 'บ้านปิน': { arr: '10:56', dep: '10:57' }, 'เด่นชัย': { arr: '11:27', dep: '11:28' },
+      'ศิลาอาสน์': { arr: '12:14', dep: '12:15' }, 'อุตรดิตถ์': { arr: '12:17', dep: '12:20' }, 'พิษณุโลก': { arr: '13:16', dep: '13:26' },
+      'พิจิตร': { arr: '13:50', dep: '13:51' }, 'ตะพานหิน': { arr: '14:07', dep: '14:08' }, 'ปากน้ำโพ': { arr: '14:47', dep: '14:48' },
+      'นครสวรรค์': { arr: '14:52', dep: '14:55' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '16:03', dep: '16:05' }, 'อยุธยา': { arr: '16:48', dep: '16:50' },
+      'รังสิต': { arr: '17:14', dep: '17:17' }, 'ดอนเมือง': { arr: '17:25', dep: '17:27' }, 'กรุงเทพอภิวัฒน์': { arr: '17:40' }
+    }
+  },
+  { 
+    id: '9', name: '9 ด่วนพิเศษอุตราวิถี กรุงเทพอภิวัฒน์–เชียงใหม่', origin: 'กรุงเทพอภิวัฒน์', dest: 'เชียงใหม่',
+    stops: ['กรุงเทพอภิวัฒน์','ดอนเมือง','รังสิต','อยุธยา','ลพบุรี 2 (ท่าวุ้ง)','นครสวรรค์','พิษณุโลก','ศิลาอาสน์','เด่นชัย','นครลำปาง','ขุนตาน','ลำพูน','เชียงใหม่'],
+    schedule: {
+      'กรุงเทพอภิวัฒน์': { dep: '18:40' }, 'ดอนเมือง': { arr: '18:55', dep: '18:57' }, 'รังสิต': { arr: '19:06', dep: '19:07' },
+      'อยุธยา': { arr: '19:43', dep: '19:45' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '20:41', dep: '20:43' }, 'นครสวรรค์': { arr: '22:17', dep: '22:20' },
+      'พิษณุโลก': { arr: '00:15', dep: '00:17' }, 'ศิลาอาสน์': { arr: '01:41', dep: '01:51' }, 'เด่นชัย': { arr: '02:45', dep: '02:48' },
+      'นครลำปาง': { arr: '04:57', dep: '05:00' }, 'ขุนตาน': { arr: '05:57', dep: '06:02' }, 'ลำพูน': { arr: '06:49', dep: '06:50' },
+      'เชียงใหม่': { arr: '07:15' }
+    }
+  },
+  { 
+    id: '10', name: '10 ด่วนพิเศษอุตราวิถี เชียงใหม่–กรุงเทพอภิวัฒน์', origin: 'เชียงใหม่', dest: 'กรุงเทพอภิวัฒน์',
+    stops: ['เชียงใหม่','ลำพูน','ขุนตาน','นครลำปาง','เด่นชัย','ศิลาอาสน์','พิษณุโลก','นครสวรรค์','ลพบุรี 2 (ท่าวุ้ง)','อยุธยา','รังสิต','ดอนเมือง','กรุงเทพอภิวัฒน์'],
+    schedule: {
+      'เชียงใหม่': { dep: '18:20' }, 'ลำพูน': { arr: '18:42', dep: '18:43' }, 'ขุนตาน': { arr: '19:28', dep: '19:29' },
+      'นครลำปาง': { arr: '20:21', dep: '20:24' }, 'เด่นชัย': { arr: '22:32', dep: '22:37' }, 'ศิลาอาสน์': { arr: '23:30', dep: '23:31' },
+      'พิษณุโลก': { arr: '00:59', dep: '01:01' }, 'นครสวรรค์': { arr: '02:47', dep: '02:52' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '04:20', dep: '04:22' },
+      'อยุธยา': { arr: '05:23', dep: '05:25' }, 'รังสิต': { arr: '06:01', dep: '06:04' }, 'ดอนเมือง': { arr: '06:13', dep: '06:15' },
+      'กรุงเทพอภิวัฒน์': { arr: '06:30' }
+    }
+  },
+  { 
+    id: '13', name: '13 ด่วนพิเศษ กรุงเทพอภิวัฒน์–เชียงใหม่', origin: 'กรุงเทพอภิวัฒน์', dest: 'เชียงใหม่',
+    stops: ['กรุงเทพอภิวัฒน์','ดอนเมือง','รังสิต','อยุธยา','ลพบุรี 2 (ท่าวุ้ง)','นครสวรรค์','พิจิตร','พิษณุโลก','อุตรดิตถ์','ศิลาอาสน์','เด่นชัย','บ้านปิน','นครลำปาง','ขุนตาน','ลำพูน','เชียงใหม่'],
+    schedule: {
+      'กรุงเทพอภิวัฒน์': { dep: '20:05' }, 'ดอนเมือง': { arr: '20:20', dep: '20:22' }, 'รังสิต': { arr: '20:31', dep: '20:32' },
+      'อยุธยา': { arr: '21:07', dep: '21:09' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '22:06', dep: '22:08' }, 'นครสวรรค์': { arr: '23:44', dep: '23:47' },
+      'พิจิตร': { arr: '01:17', dep: '01:18' }, 'พิษณุโลก': { arr: '01:57', dep: '01:59' }, 'อุตรดิตถ์': { arr: '03:15', dep: '03:18' },
+      'ศิลาอาสน์': { arr: '03:21', dep: '03:31' }, 'เด่นชัย': { arr: '04:23', dep: '04:26' }, 'บ้านปิน': { arr: '04:59', dep: '05:00' },
+      'นครลำปาง': { arr: '06:35', dep: '06:38' }, 'ขุนตาน': { arr: '07:32', dep: '07:37' }, 'ลำพูน': { arr: '08:20', dep: '08:21' },
+      'เชียงใหม่': { arr: '08:45' }
+    }
+  },
+  { 
+    id: '14', name: '14 ด่วนพิเศษ เชียงใหม่–กรุงเทพอภิวัฒน์', origin: 'เชียงใหม่', dest: 'กรุงเทพอภิวัฒน์',
+    stops: ['เชียงใหม่','ลำพูน','ขุนตาน','นครลำปาง','บ้านปิน','เด่นชัย','ศิลาอาสน์','อุตรดิตถ์','พิษณุโลก','พิจิตร','นครสวรรค์','ลพบุรี 2 (ท่าวุ้ง)','อยุธยา','รังสิต','ดอนเมือง','กรุงเทพอภิวัฒน์'],
+    schedule: {
+      'เชียงใหม่': { dep: '17:05' }, 'ลำพูน': { arr: '17:29', dep: '17:33' }, 'ขุนตาน': { arr: '18:22', dep: '18:23' },
+      'นครลำปาง': { arr: '19:16', dep: '19:19' }, 'บ้านปิน': { arr: '20:56', dep: '20:57' }, 'เด่นชัย': { arr: '21:32', dep: '21:35' },
+      'ศิลาอาสน์': { arr: '22:29', dep: '22:30' }, 'อุตรดิตถ์': { arr: '22:33', dep: '22:36' }, 'พิษณุโลก': { arr: '23:59', dep: '00:01' },
+      'พิจิตร': { arr: '00:38', dep: '00:39' }, 'นครสวรรค์': { arr: '01:59', dep: '02:02' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '03:39', dep: '03:41' },
+      'อยุธยา': { arr: '04:46', dep: '04:48' }, 'รังสิต': { arr: '05:26', dep: '05:29' }, 'ดอนเมือง': { arr: '05:38', dep: '05:40' },
+      'กรุงเทพอภิวัฒน์': { arr: '05:55' }
+    }
+  },
+  { 
+    id: '102', name: '102 เร็ว เชียงใหม่–กรุงเทพอภิวัฒน์', origin: 'เชียงใหม่', dest: 'กรุงเทพอภิวัฒน์',
+    stops: ['เชียงใหม่','ลำพูน','ขุนตาน','นครลำปาง','แม่เมาะ','บ้านปิน','เด่นชัย','ศิลาอาสน์','อุตรดิตถ์','ท่าสัก','ชุมทางบ้านดารา','พิชัย','หนองตม','พิษณุโลก','บางกระทุ่ม','พิจิตร','ตะพานหิน','บางมูลนาก','ชุมแสง','ปากน้ำโพ','นครสวรรค์','หนองโพ','บ้านตาคลี','ช่องแค','จันเสน','บ้านหมี่','ลพบุรี 2 (ท่าวุ้ง)','บ้านหมอ','ท่าเรือ','ชุมทางบ้านภาชี','อยุธยา','รังสิต','ดอนเมือง','กรุงเทพอภิวัฒน์'],
+    schedule: {
+      'เชียงใหม่': { dep: '06:25' }, 'ลำพูน': { arr: '06:47', dep: '06:51' }, 'ขุนตาน': { arr: '07:35', dep: '07:36' },
+      'นครลำปาง': { arr: '08:29', dep: '08:32' }, 'แม่เมาะ': { arr: '09:13', dep: '09:14' }, 'บ้านปิน': { arr: '10:10', dep: '10:11' },
+      'เด่นชัย': { arr: '10:43', dep: '10:46' }, 'ศิลาอาสน์': { arr: '11:38', dep: '11:48' }, 'อุตรดิตถ์': { arr: '11:51', dep: '11:54' },
+      'ท่าสัก': { arr: '12:14', dep: '12:15' }, 'ชุมทางบ้านดารา': { arr: '12:19', dep: '12:20' }, 'พิชัย': { arr: '12:30', dep: '12:33' },
+      'หนองตม': { arr: '13:07', dep: '13:08' }, 'พิษณุโลก': { arr: '13:40', dep: '13:42' }, 'บางกระทุ่ม': { arr: '14:07', dep: '14:08' },
+      'พิจิตร': { arr: '14:21', dep: '14:22' }, 'ตะพานหิน': { arr: '14:44', dep: '14:45' }, 'บางมูลนาก': { arr: '15:03', dep: '15:04' },
+      'ชุมแสง': { arr: '15:18', dep: '15:19' }, 'ปากน้ำโพ': { arr: '15:45', dep: '15:46' }, 'นครสวรรค์': { arr: '15:51', dep: '15:54' },
+      'หนองโพ': { arr: '16:23', dep: '16:24' }, 'บ้านตาคลี': { arr: '16:42', dep: '16:43' }, 'ช่องแค': { arr: '16:56', dep: '16:57' },
+      'จันเสน': { arr: '17:04', dep: '17:05' }, 'บ้านหมี่': { arr: '17:17', dep: '17:18' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '17:48', dep: '17:50' },
+      'บ้านหมอ': { arr: '18:16', dep: '18:17' }, 'ท่าเรือ': { arr: '18:23', dep: '18:24' }, 'ชุมทางบ้านภาชี': { arr: '18:36', dep: '18:37' },
+      'อยุธยา': { arr: '18:57', dep: '18:59' }, 'รังสิต': { arr: '19:35', dep: '19:38' }, 'ดอนเมือง': { arr: '19:48', dep: '19:50' },
+      'กรุงเทพอภิวัฒน์': { arr: '20:05' }
+    }
+  },
+  { 
+    id: '107', name: '107 เร็ว กรุงเทพอภิวัฒน์–เด่นชัย', origin: 'กรุงเทพอภิวัฒน์', dest: 'เด่นชัย',
+    stops: ['กรุงเทพอภิวัฒน์','ดอนเมือง','รังสิต','อยุธยา','ชุมทางบ้านภาชี','ลพบุรี 2 (ท่าวุ้ง)','นครสวรรค์','ปากน้ำโพ','ชุมแสง','บางมูลนาก','ตะพานหิน','พิจิตร','พิษณุโลก','หนองตม','พิชัย','ท่าสัก','อุตรดิตถ์','ศิลาอาสน์','เด่นชัย'],
+    schedule: {
+      'กรุงเทพอภิวัฒน์': { dep: '20:45' }, 'ดอนเมือง': { arr: '21:00', dep: '21:02' }, 'รังสิต': { arr: '21:11', dep: '21:12' },
+      'อยุธยา': { arr: '21:48', dep: '21:50' }, 'ชุมทางบ้านภาชี': { arr: '22:07', dep: '22:08' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '22:48', dep: '22:50' },
+      'นครสวรรค์': { arr: '00:22', dep: '00:24' }, 'ปากน้ำโพ': { arr: '00:29', dep: '00:32' }, 'ชุมแสง': { arr: '01:01', dep: '01:02' },
+      'บางมูลนาก': { arr: '01:17', dep: '01:20' }, 'ตะพานหิน': { arr: '01:40', dep: '01:41' }, 'พิจิตร': { arr: '02:09', dep: '02:10' },
+      'พิษณุโลก': { arr: '02:44', dep: '02:46' }, 'หนองตม': { arr: '03:14', dep: '03:15' }, 'พิชัย': { arr: '03:36', dep: '03:37' },
+      'ท่าสัก': { arr: '03:51', dep: '03:52' }, 'อุตรดิตถ์': { arr: '04:13', dep: '04:16' }, 'ศิลาอาสน์': { arr: '04:20', dep: '04:30' },
+      'เด่นชัย': { arr: '05:25' }
+    }
+  },
+  { 
+    id: '108', name: '108 เร็ว เด่นชัย–กรุงเทพอภิวัฒน์', origin: 'เด่นชัย', dest: 'กรุงเทพอภิวัฒน์',
+    stops: ['เด่นชัย','ศิลาอาสน์','อุตรดิตถ์','ตรอน','ท่าสัก','ชุมทางบ้านดารา','พิชัย','บ้านโคน','หนองตม','พรหมพิราม','พิษณุโลก','บ้านใหม่','บางกระทุ่ม','พิจิตร','หัวดง','ตะพานหิน','บางมูลนาก','ชุมแสง','ปากน้ำโพ','นครสวรรค์','บ้านตาคลี','ลพบุรี 2 (ท่าวุ้ง)','ชุมทางบ้านภาชี','อยุธยา','รังสิต','ดอนเมือง','กรุงเทพอภิวัฒน์'],
+    schedule: {
+      'เด่นชัย': { dep: '19:10' }, 'ศิลาอาสน์': { arr: '20:01', dep: '20:11' }, 'อุตรดิตถ์': { arr: '20:15', dep: '20:18' },
+      'ตรอน': { arr: '20:33', dep: '20:34' }, 'ท่าสัก': { arr: '20:42', dep: '20:43' }, 'ชุมทางบ้านดารา': { arr: '20:48', dep: '20:49' },
+      'พิชัย': { arr: '21:00', dep: '21:01' }, 'บ้านโคน': { arr: '21:10', dep: '21:11' }, 'หนองตม': { arr: '21:29', dep: '21:30' },
+      'พรหมพิราม': { arr: '21:39', dep: '21:40' }, 'พิษณุโลก': { arr: '22:03', dep: '22:05' }, 'บ้านใหม่': { arr: '22:18', dep: '22:19' },
+      'บางกระทุ่ม': { arr: '22:31', dep: '22:32' }, 'พิจิตร': { arr: '22:47', dep: '22:48' }, 'หัวดง': { arr: '23:01', dep: '23:02' },
+      'ตะพานหิน': { arr: '23:16', dep: '23:19' }, 'บางมูลนาก': { arr: '23:40', dep: '23:41' }, 'ชุมแสง': { arr: '23:57', dep: '23:58' },
+      'ปากน้ำโพ': { arr: '00:27', dep: '00:30' }, 'นครสวรรค์': { arr: '00:36', dep: '00:38' }, 'บ้านตาคลี': { arr: '01:23', dep: '01:24' },
+      'ลพบุรี 2 (ท่าวุ้ง)': { arr: '02:20', dep: '02:22' }, 'ชุมทางบ้านภาชี': { arr: '03:03', dep: '03:04' }, 'อยุธยา': { arr: '03:23', dep: '03:25' },
+      'รังสิต': { arr: '04:01', dep: '04:04' }, 'ดอนเมือง': { arr: '04:13', dep: '04:15' }, 'กรุงเทพอภิวัฒน์': { arr: '04:30' }
+    }
+  },
+  { 
+    id: '109', name: '109 เร็ว กรุงเทพอภิวัฒน์–เชียงใหม่', origin: 'กรุงเทพอภิวัฒน์', dest: 'เชียงใหม่',
+    stops: ['กรุงเทพอภิวัฒน์','ดอนเมือง','รังสิต','อยุธยา','ชุมทางบ้านภาชี','ท่าเรือ','บ้านหมอ','ลพบุรี 2 (ท่าวุ้ง)','บ้านหมี่','จันเสน','ช่องแค','บ้านตาคลี','หนองโพ','นครสวรรค์','ปากน้ำโพ','ชุมแสง','บางมูลนาก','ตะพานหิน','พิจิตร','บางกระทุ่ม','พิษณุโลก','พรหมพิราม','หนองตม','พิชัย','ชุมทางบ้านดารา','ท่าสัก','ตรอน','อุตรดิตถ์','ศิลาอาสน์','เด่นชัย','บ้านปิน','แม่เมาะ','นครลำปาง','ขุนตาน','ลำพูน','เชียงใหม่'],
+    schedule: {
+      'กรุงเทพอภิวัฒน์': { dep: '14:15' }, 'ดอนเมือง': { arr: '14:30', dep: '14:32' }, 'รังสิต': { arr: '14:42', dep: '14:43' },
+      'อยุธยา': { arr: '15:18', dep: '15:20' }, 'ชุมทางบ้านภาชี': { arr: '15:38', dep: '15:39' }, 'ท่าเรือ': { arr: '15:51', dep: '15:52' },
+      'บ้านหมอ': { arr: '15:58', dep: '15:59' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '16:26', dep: '16:28' }, 'บ้านหมี่': { arr: '16:57', dep: '16:58' },
+      'จันเสน': { arr: '17:10', dep: '17:11' }, 'ช่องแค': { arr: '17:18', dep: '17:19' }, 'บ้านตาคลี': { arr: '17:31', dep: '17:32' },
+      'หนองโพ': { arr: '17:50', dep: '17:51' }, 'นครสวรรค์': { arr: '18:19', dep: '18:22' }, 'ปากน้ำโพ': { arr: '18:27', dep: '18:28' },
+      'ชุมแสง': { arr: '18:53', dep: '18:54' }, 'บางมูลนาก': { arr: '19:08', dep: '19:09' }, 'ตะพานหิน': { arr: '19:29', dep: '19:30' },
+      'พิจิตร': { arr: '19:55', dep: '19:56' }, 'บางกระทุ่ม': { arr: '20:10', dep: '20:11' }, 'พิษณุโลก': { arr: '20:35', dep: '20:37' },
+      'พรหมพิราม': { arr: '21:01', dep: '21:02' }, 'หนองตม': { arr: '21:10', dep: '21:11' }, 'พิชัย': { arr: '21:32', dep: '21:33' },
+      'ชุมทางบ้านดารา': { arr: '21:44', dep: '21:45' }, 'ท่าสัก': { arr: '21:50', dep: '21:56' }, 'ตรอน': { arr: '22:04', dep: '22:05' },
+      'อุตรดิตถ์': { arr: '22:20', dep: '22:23' }, 'ศิลาอาสน์': { arr: '22:27', dep: '22:37' }, 'เด่นชัย': { arr: '23:40', dep: '23:43' },
+      'บ้านปิน': { arr: '00:16', dep: '00:17' }, 'แม่เมาะ': { arr: '01:17', dep: '01:18' }, 'นครลำปาง': { arr: '01:54', dep: '01:57' },
+      'ขุนตาน': { arr: '02:49', dep: '02:50' }, 'ลำพูน': { arr: '03:35', dep: '03:36' }, 'เชียงใหม่': { arr: '04:00' }
+    }
+  },
+  { 
+    id: '111', name: '111 เร็ว กรุงเทพอภิวัฒน์–เด่นชัย', origin: 'กรุงเทพอภิวัฒน์', dest: 'เด่นชัย',
+    stops: ['กรุงเทพอภิวัฒน์','ดอนเมือง','รังสิต','เชียงราก','บางปะอิน','อยุธยา','พระแก้ว','ชุมทางบ้านภาชี','หนองวิวัฒน์','ท่าเรือ','บ้านหมอ','หนองโดน','ลพบุรี 2 (ท่าวุ้ง)','บ้านหมี่','จันเสน','ช่องแค','บ้านตาคลี','หนองโพ','นครสวรรค์','ปากน้ำโพ','ทับกฤช','ชุมแสง','บางมูลนาก','ตะพานหิน','หัวดง','วังกรด','พิจิตร','บางกระทุ่ม','พิษณุโลก','พรหมพิราม','หนองตม','พิชัย','ชุมทางบ้านดารา','ท่าสัก','ตรอน','อุตรดิตถ์','ศิลาอาสน์','บ้านด่าน','ปางต้นผึ้ง','ห้วยไร่','เด่นชัย'],
+    schedule: {
+      'กรุงเทพอภิวัฒน์': { dep: '07:50' }, 'ดอนเมือง': { arr: '08:05', dep: '08:07' }, 'รังสิต': { arr: '08:16', dep: '08:17' },
+      'เชียงราก': { arr: '08:24', dep: '08:25' }, 'บางปะอิน': { arr: '08:44', dep: '08:45' }, 'อยุธยา': { arr: '08:57', dep: '08:59' },
+      'พระแก้ว': { arr: '09:12', dep: '09:13' }, 'ชุมทางบ้านภาชี': { arr: '09:17', dep: '09:18' }, 'หนองวิวัฒน์': { arr: '09:24', dep: '09:25' },
+      'ท่าเรือ': { arr: '09:31', dep: '09:32' }, 'บ้านหมอ': { arr: '09:38', dep: '09:39' }, 'หนองโดน': { arr: '09:46', dep: '09:47' },
+      'ลพบุรี 2 (ท่าวุ้ง)': { arr: '10:07', dep: '10:09' }, 'บ้านหมี่': { arr: '10:36', dep: '10:37' }, 'จันเสน': { arr: '10:47', dep: '10:48' },
+      'ช่องแค': { arr: '10:54', dep: '10:55' }, 'บ้านตาคลี': { arr: '11:06', dep: '11:07' }, 'หนองโพ': { arr: '11:22', dep: '11:23' },
+      'นครสวรรค์': { arr: '11:49', dep: '11:52' }, 'ปากน้ำโพ': { arr: '11:57', dep: '11:58' }, 'ทับกฤช': { arr: '12:10', dep: '12:11' },
+      'ชุมแสง': { arr: '12:25', dep: '12:26' }, 'บางมูลนาก': { arr: '12:39', dep: '12:40' }, 'ตะพานหิน': { arr: '12:59', dep: '13:00' },
+      'หัวดง': { arr: '13:11', dep: '13:12' }, 'วังกรด': { arr: '13:18', dep: '13:19' }, 'พิจิตร': { arr: '13:26', dep: '13:27' },
+      'บางกระทุ่ม': { arr: '13:40', dep: '13:43' }, 'พิษณุโลก': { arr: '14:08', dep: '14:10' }, 'พรหมพิราม': { arr: '14:31', dep: '14:32' },
+      'หนองตม': { arr: '14:40', dep: '14:41' }, 'พิชัย': { arr: '15:01', dep: '15:02' }, 'ชุมทางบ้านดารา': { arr: '15:12', dep: '15:13' },
+      'ท่าสัก': { arr: '15:17', dep: '15:18' }, 'ตรอน': { arr: '15:26', dep: '15:27' }, 'อุตรดิตถ์': { arr: '15:40', dep: '15:43' },
+      'ศิลาอาสน์': { arr: '15:47', dep: '15:49' }, 'บ้านด่าน': { arr: '16:00', dep: '16:01' }, 'ปางต้นผึ้ง': { arr: '16:15', dep: '16:16' },
+      'ห้วยไร่': { arr: '16:34', dep: '16:35' }, 'เด่นชัย': { arr: '16:50' }
+    }
+  },
+  { 
+    id: '112', name: '112 เร็ว เด่นชัย–กรุงเทพอภิวัฒน์', origin: 'เด่นชัย', dest: 'กรุงเทพอภิวัฒน์',
+    stops: ['เด่นชัย','ห้วยไร่','ปางต้นผึ้ง','บ้านด่าน','ศิลาอาสน์','อุตรดิตถ์','ตรอน','ท่าสัก','ชุมทางบ้านดารา','พิชัย','หนองตม','พรหมพิราม','พิษณุโลก','บางกระทุ่ม','พิจิตร','วังกรด','หัวดง','ตะพานหิน','บางมูลนาก','ชุมแสง','ทับกฤช','ปากน้ำโพ','นครสวรรค์','หนองโพ','บ้านตาคลี','ช่องแค','จันเสน','บ้านหมี่','ลพบุรี 2 (ท่าวุ้ง)','หนองโดน','บ้านหมอ','ท่าเรือ','หนองวิวัฒน์','ชุมทางบ้านภาชี','พระแก้ว','มาบพระจันทร์','อยุธยา','บางปะอิน','เชียงราก','รังสิต','ดอนเมือง','กรุงเทพอภิวัฒน์'],
+    schedule: {
+      'เด่นชัย': { dep: '08:00' }, 'ห้วยไร่': { arr: '08:14', dep: '08:15' }, 'ปางต้นผึ้ง': { arr: '08:32', dep: '08:33' },
+      'บ้านด่าน': { arr: '08:46', dep: '08:47' }, 'ศิลาอาสน์': { arr: '08:57', dep: '08:59' }, 'อุตรดิตถ์': { arr: '09:02', dep: '09:05' },
+      'ตรอน': { arr: '09:20', dep: '09:21' }, 'ท่าสัก': { arr: '09:29', dep: '09:30' }, 'ชุมทางบ้านดารา': { arr: '09:34', dep: '09:35' },
+      'พิชัย': { arr: '09:46', dep: '09:47' }, 'หนองตม': { arr: '10:08', dep: '10:09' }, 'พรหมพิราม': { arr: '10:17', dep: '10:18' },
+      'พิษณุโลก': { arr: '10:41', dep: '10:43' }, 'บางกระทุ่ม': { arr: '11:06', dep: '11:07' }, 'พิจิตร': { arr: '11:20', dep: '11:24' },
+      'วังกรด': { arr: '11:31', dep: '11:32' }, 'หัวดง': { arr: '11:38', dep: '11:39' }, 'ตะพานหิน': { arr: '11:50', dep: '11:51' },
+      'บางมูลนาก': { arr: '12:08', dep: '12:09' }, 'ชุมแสง': { arr: '12:23', dep: '12:27' }, 'ทับกฤช': { arr: '12:41', dep: '12:42' },
+      'ปากน้ำโพ': { arr: '12:54', dep: '12:55' }, 'นครสวรรค์': { arr: '13:00', dep: '13:03' }, 'หนองโพ': { arr: '13:31', dep: '13:32' },
+      'บ้านตาคลี': { arr: '13:48', dep: '13:49' }, 'ช่องแค': { arr: '14:00', dep: '14:01' }, 'จันเสน': { arr: '14:07', dep: '14:08' },
+      'บ้านหมี่': { arr: '14:19', dep: '14:20' }, 'ลพบุรี 2 (ท่าวุ้ง)': { arr: '14:49', dep: '14:51' }, 'หนองโดน': { arr: '15:11', dep: '15:12' },
+      'บ้านหมอ': { arr: '15:19', dep: '15:20' }, 'ท่าเรือ': { arr: '15:26', dep: '15:27' }, 'หนองวิวัฒน์': { arr: '15:33', dep: '15:34' },
+      'ชุมทางบ้านภาชี': { arr: '15:40', dep: '15:41' }, 'พระแก้ว': { arr: '15:47', dep: '15:48' }, 'มาบพระจันทร์': { arr: '15:54', dep: '15:55' },
+      'อยุธยา': { arr: '16:02', dep: '16:04' }, 'บางปะอิน': { arr: '16:15', dep: '16:16' }, 'เชียงราก': { arr: '16:33', dep: '16:34' },
+      'รังสิต': { arr: '16:41', dep: '16:44' }, 'ดอนเมือง': { arr: '16:53', dep: '16:55' }, 'กรุงเทพอภิวัฒน์': { arr: '17:10' }
+    }
+  },
+  { 
+    id: '201', name: '201 ธรรมดา กรุงเทพ (หัวลำโพง)–พิษณุโลก', origin: 'กรุงเทพ (หัวลำโพง)', dest: 'พิษณุโลก',
+    stops: ['กรุงเทพ (หัวลำโพง)','สามเสน','ชุมทางบางซื่อ','ดอนเมือง','รังสิต','เชียงราก','มหาวิทยาลัยธรรมศาสตร์','เชียงรากน้อย','คลองพุทรา','บางปะอิน','บ้านโพ','อยุธยา','มาบพระจันทร์','พระแก้ว','ชุมทางบ้านภาชี','หนองวิวัฒน์','ท่าเรือ','บ้านหมอ','หนองโดน','ชุมทางบ้านกลับ','บ้านป่าหวาย','ลพบุรี','ท่าแค','ชุมทางโคกกะเทียม','หนองเต่า','หนองทรายขาว','บ้านหมี่','ไผ่ใหญ่','จันเสน','ช่องแค','บ้านตาคลี','ดงมะกุ','หัวหวาย','หนองโพ','หัวงิ้ว','เนินมะกอก','เขาทอง','นครสวรรค์','ปากน้ำโพ','ทับกฤช','คลองปลากด','ชุมแสง','วังกระพี้','บางมูลนาก','หอไกร','ดงตะขบ','ตะพานหิน','ห้วยเกตุ','หัวดง','วังกรด','พิจิตร','ท่าฬ่อ','บางกระทุ่ม','แม่เทียบ','บ้านใหม่','พิษณุโลก'],
+    schedule: {
+      'กรุงเทพ (หัวลำโพง)': { dep: '10:15' }, 'สามเสน': { arr: '10:28', dep: '10:29' }, 'ชุมทางบางซื่อ': { arr: '10:35', dep: '10:48' },
+      'ดอนเมือง': { arr: '11:13', dep: '11:15' }, 'รังสิต': { arr: '11:25', dep: '11:26' }, 'เชียงราก': { arr: '11:33', dep: '11:34' },
+      'มหาวิทยาลัยธรรมศาสตร์': { arr: '11:37', dep: '11:38' }, 'เชียงรากน้อย': { arr: '11:44', dep: '11:45' }, 'คลองพุทรา': { arr: '11:52', dep: '11:53' },
+      'บางปะอิน': { arr: '11:59', dep: '12:00' }, 'บ้านโพ': { arr: '12:05', dep: '12:06' }, 'อยุธยา': { arr: '12:14', dep: '12:15' },
+      'มาบพระจันทร์': { arr: '12:22', dep: '12:23' }, 'พระแก้ว': { arr: '12:29', dep: '12:30' }, 'ชุมทางบ้านภาชี': { arr: '12:34', dep: '12:35' },
+      'หนองวิวัฒน์': { arr: '12:41', dep: '12:42' }, 'ท่าเรือ': { arr: '12:48', dep: '12:49' }, 'บ้านหมอ': { arr: '12:55', dep: '12:56' },
+      'หนองโดน': { arr: '13:03', dep: '13:04' }, 'ชุมทางบ้านกลับ': { arr: '13:09', dep: '13:10' }, 'บ้านป่าหวาย': { arr: '13:15', dep: '13:16' },
+      'ลพบุรี': { arr: '13:22', dep: '13:24' }, 'ท่าแค': { arr: '13:29', dep: '13:30' }, 'ชุมทางโคกกะเทียม': { arr: '13:36', dep: '13:37' },
+      'หนองเต่า': { arr: '13:42', dep: '13:43' }, 'หนองทรายขาว': { arr: '13:48', dep: '13:49' }, 'บ้านหมี่': { arr: '13:55', dep: '13:56' },
+      'ไผ่ใหญ่': { arr: '14:04', dep: '14:05' }, 'จันเสน': { arr: '14:09', dep: '14:10' }, 'ช่องแค': { arr: '14:16', dep: '14:17' },
+      'บ้านตาคลี': { arr: '14:28', dep: '14:29' }, 'ดงมะกุ': { arr: '14:34', dep: '14:35' }, 'หัวหวาย': { arr: '14:40', dep: '14:41' },
+      'หนองโพ': { arr: '14:48', dep: '14:49' }, 'หัวงิ้ว': { arr: '14:54', dep: '14:55' }, 'เนินมะกอก': { arr: '15:02', dep: '15:03' },
+      'เขาทอง': { arr: '15:12', dep: '15:13' }, 'นครสวรรค์': { arr: '15:22', dep: '15:25' }, 'ปากน้ำโพ': { arr: '15:30', dep: '15:31' },
+      'ทับกฤช': { arr: '15:46', dep: '15:47' }, 'คลองปลากด': { arr: '15:53', dep: '15:54' }, 'ชุมแสง': { arr: '16:02', dep: '16:03' },
+      'วังกร่าง': { arr: '16:11', dep: '16:12' }, 'บางมูลนาก': { arr: '16:18', dep: '16:19' }, 'หอไกร': { arr: '16:25', dep: '16:26' },
+      'ดงตะขบ': { arr: '16:32', dep: '16:33' }, 'ตะพานหิน': { arr: '16:42', dep: '16:43' }, 'ห้วยเกตุ': { arr: '16:48', dep: '16:49' },
+      'หัวดง': { arr: '16:56', dep: '16:57' }, 'วังกรด': { arr: '17:03', dep: '17:04' }, 'พิจิตร': { arr: '17:10', dep: '17:11' },
+      'ท่าฬ่อ': { arr: '17:18', dep: '17:19' }, 'บางกระทุ่ม': { arr: '17:26', dep: '17:27' }, 'แม่เทียบ': { arr: '17:31', dep: '17:35' },
+      'บ้านใหม่': { arr: '17:43', dep: '17:44' }, 'พิษณุโลก': { arr: '17:55' }
+    }
+  },
+  { 
+    id: '202', name: '202 ธรรมดา พิษณุโลก–กรุงเทพ (หัวลำโพง)', origin: 'พิษณุโลก', dest: 'กรุงเทพ (หัวลำโพง)',
+    stops: ['พิษณุโลก','บ้านใหม่','แม่เทียบ','บางกระทุ่ม','ท่าฬ่อ','พิจิตร','วังกรด','หัวดง','ห้วยเกตุ','ตะพานหิน','ดงตะขบ','หอไกร','บางมูลนาก','วังกร่าง','ชุมแสง','คลองปลากด','ทับกฤช','บึงบอระเพ็ด','ปากน้ำโพ','นครสวรรค์','เขาทอง','เนินมะกอก','หัวงิ้ว','หนองโพ','หัวหวาย','ดงมะกุ','บ้านตาคลี','โพนทอง','ช่องแค','บ้านกกกว้าว','จันเสน','ไผ่ใหญ่','ห้วยแก้ว','บ้านหมี่','หนองทรายขาว','หนองเต่า','ชุมทางโคกกะเทียม','ท่าแค','ลพบุรี','บ้านป่าหวาย','ชุมทางบ้านกลับ','หนองโดน','บ้านหมอ','ท่าเรือ','หนองวิวัฒน์','ชุมทางบ้านภาชี','พระแก้ว','มาบพระจันทร์','บ้านม้า','อยุธยา','บ้านโพ','บางปะอิน','คลองพุทรา','เชียงรากน้อย','มหาวิทยาลัยธรรมศาสตร์','เชียงราก','รังสิต','ดอนเมือง','ชุมทางบางซื่อ','สามเสน','กรุงเทพ (หัวลำโพง)'],
+    schedule: {
+      'พิษณุโลก': { dep: '06:05' }, 'บ้านใหม่': { arr: '06:15', dep: '06:16' }, 'แม่เทียบ': { arr: '06:24', dep: '06:25' },
+      'บางกระทุ่ม': { arr: '06:29', dep: '06:30' }, 'ท่าฬ่อ': { arr: '06:37', dep: '06:38' }, 'พิจิตร': { arr: '06:45', dep: '06:46' },
+      'วังกรด': { arr: '06:53', dep: '06:54' }, 'หัวดง': { arr: '07:00', dep: '07:01' }, 'ห้วยเกตุ': { arr: '07:08', dep: '07:09' },
+      'ตะพานหิน': { arr: '07:15', dep: '07:16' }, 'ดงตะขบ': { arr: '07:24', dep: '07:25' }, 'หอไกร': { arr: '07:31', dep: '07:32' },
+      'บางมูลนาก': { arr: '07:38', dep: '07:39' }, 'วังกร่าง': { arr: '07:46', dep: '07:47' }, 'ชุมแสง': { arr: '07:56', dep: '07:57' },
+      'คลองปลากด': { arr: '08:05', dep: '08:06' }, 'ทับกฤช': { arr: '08:12', dep: '08:13' }, 'บึงบอระเพ็ด': { arr: '08:19', dep: '08:20' },
+      'ปากน้ำโพ': { arr: '08:26', dep: '08:27' }, 'นครสวรรค์': { arr: '08:32', dep: '08:35' }, 'เขาทอง': { arr: '08:44', dep: '08:45' },
+      'เนินมะกอก': { arr: '08:54', dep: '08:55' }, 'หัวงิ้ว': { arr: '09:01', dep: '09:02' }, 'หนองโพ': { arr: '09:08', dep: '09:09' },
+      'หัวหวาย': { arr: '09:16', dep: '09:17' }, 'ดงมะกุ': { arr: '09:22', dep: '09:23' }, 'บ้านตาคลี': { arr: '09:28', dep: '09:29' },
+      'โพนทอง': { arr: '09:34', dep: '09:35' }, 'ช่องแค': { arr: '09:43', dep: '09:44' }, 'บ้านกกกว้าว': { arr: '09:48', dep: '09:49' },
+      'จันเสน': { arr: '09:52', dep: '09:53' }, 'ไผ่ใหญ่': { arr: '09:57', dep: '09:58' }, 'ห้วยแก้ว': { arr: '10:02', dep: '10:03' },
+      'บ้านหมี่': { arr: '10:08', dep: '10:09' }, 'หนองทรายขาว': { arr: '10:15', dep: '10:16' }, 'หนองเต่า': { arr: '10:21', dep: '10:22' },
+      'ชุมทางโคกกะเทียม': { arr: '10:27', dep: '10:28' }, 'ท่าแค': { arr: '10:34', dep: '10:35' }, 'ลพบุรี': { arr: '10:40', dep: '10:42' },
+      'บ้านป่าหวาย': { arr: '10:48', dep: '10:49' }, 'ชุมทางบ้านกลับ': { arr: '10:55', dep: '10:56' }, 'หนองโดน': { arr: '11:01', dep: '11:02' },
+      'บ้านหมอ': { arr: '11:09', dep: '11:10' }, 'ท่าเรือ': { arr: '11:16', dep: '11:17' }, 'หนองวิวัฒน์': { arr: '11:23', dep: '11:24' },
+      'ชุมทางบ้านภาชี': { arr: '11:30', dep: '11:31' }, 'พระแก้ว': { arr: '11:37', dep: '11:38' }, 'มาบพระจันทร์': { arr: '11:44', dep: '11:45' },
+      'บ้านม้า': { arr: '11:49', dep: '11:50' }, 'อยุธยา': { arr: '11:54', dep: '11:55' }, 'บ้านโพ': { arr: '12:03', dep: '12:04' },
+      'บางปะอิน': { arr: '12:08', dep: '12:09' }, 'คลองพุทรา': { arr: '12:15', dep: '12:16' }, 'เชียงรากน้อย': { arr: '12:22', dep: '12:23' },
+      'มหาวิทยาลัยธรรมศาสตร์': { arr: '12:29', dep: '12:30' }, 'เชียงราก': { arr: '12:34', dep: '12:35' }, 'รังสิต': { arr: '12:42', dep: '12:45' },
+      'ดอนเมือง': { arr: '12:55', dep: '12:57' }, 'ชุมทางบางซื่อ': { arr: '13:22', dep: '13:24' }, 'สามเสน': { arr: '13:31', dep: '13:32' },
+      'กรุงเทพ (หัวลำโพง)': { arr: '13:45' }
+    }
+  },
+  { 
+    id: '401', name: '401 ท้องถิ่น ลพบุรี–พิษณุโลก', origin: 'ลพบุรี', dest: 'พิษณุโลก',
+    stops: ['ลพบุรี','ท่าแค','ชุมทางโคกกะเทียม','หนองเต่า','หนองทรายขาว','บ้านหมี่','ห้วยแก้ว','ไผ่ใหญ่','จันเสน','บ้านกกกว้าว','ช่องแค','โพนทอง','บ้านตาคลี','ดงมะกุ','หัวหวาย','หนองโพ','หัวงิ้ว','เนินมะกอก','เขาทอง','นครสวรรค์','ปากน้ำโพ','บึงบอระเพ็ด','ทับกฤช','คลองปลากด','ชุมแสง','วังกร่าง','บางมูลนาก','หอไกร','ดงตะขบ','ตะพานหิน','ห้วยเกตุ','หัวดง','วังกรด','พิจิตร','ท่าฬ่อ','บางกระทุ่ม','แม่เทียบ','บ้านใหม่','บึงพระ','พิษณุโลก'],
+    schedule: {
+      'ลพบุรี': { dep: '06:00' }, 'ท่าแค': { arr: '06:04', dep: '06:05' }, 'ชุมทางโคกกะเทียม': { arr: '06:11', dep: '06:12' },
+      'หนองเต่า': { arr: '06:17', dep: '06:18' }, 'หนองทรายขาว': { arr: '06:23', dep: '06:24' }, 'บ้านหมี่': { arr: '06:29', dep: '06:30' },
+      'ห้วยแก้ว': { arr: '06:35', dep: '06:36' }, 'ไผ่ใหญ่': { arr: '06:40', dep: '06:41' }, 'จันเสน': { arr: '06:45', dep: '06:46' },
+      'บ้านกกกว้าว': { arr: '06:49', dep: '06:50' }, 'ช่องแค': { arr: '06:54', dep: '06:55' }, 'โพนทอง': { arr: '07:02', dep: '07:03' },
+      'บ้านตาคลี': { arr: '07:07', dep: '07:08' }, 'ดงมะกุ': { arr: '07:14', dep: '07:15' }, 'หัวหวาย': { arr: '07:20', dep: '07:21' },
+      'หนองโพ': { arr: '07:27', dep: '07:28' }, 'หัวงิ้ว': { arr: '07:33', dep: '07:34' }, 'เนินมะกอก': { arr: '07:41', dep: '07:42' },
+      'เขาทอง': { arr: '07:51', dep: '07:52' }, 'นครสวรรค์': { arr: '08:00', dep: '08:05' }, 'ปากน้ำโพ': { arr: '08:10', dep: '08:11' },
+      'บึงบอระเพ็ด': { arr: '08:17', dep: '08:21' }, 'ทับกฤช': { arr: '08:27', dep: '08:28' }, 'คลองปลากด': { arr: '08:34', dep: '08:35' },
+      'ชุมแสง': { arr: '08:43', dep: '08:44' }, 'วังกร่าง': { arr: '08:52', dep: '08:53' }, 'บางมูลนาก': { arr: '08:59', dep: '09:00' },
+      'หอไกร': { arr: '09:06', dep: '09:07' }, 'ดงตะขบ': { arr: '09:13', dep: '09:14' }, 'ตะพานหิน': { arr: '09:23', dep: '09:24' },
+      'ห้วยเกตุ': { arr: '09:29', dep: '09:30' }, 'หัวดง': { arr: '09:37', dep: '09:38' }, 'วังกรด': { arr: '09:44', dep: '09:45' },
+      'พิจิตร': { arr: '09:51', dep: '09:52' }, 'ท่าฬ่อ': { arr: '09:59', dep: '10:00' }, 'บางกระทุ่ม': { arr: '10:07', dep: '10:08' },
+      'แม่เทียบ': { arr: '10:12', dep: '10:13' }, 'บ้านใหม่': { arr: '10:21', dep: '10:22' }, 'บึงพระ': { arr: '10:28', dep: '10:29' },
+      'พิษณุโลก': { arr: '10:35' }
+    }
+  },
+  { 
+    id: '402', name: '402 ท้องถิ่น พิษณุโลก–ลพบุรี', origin: 'พิษณุโลก', dest: 'ลพบุรี',
+    stops: ['พิษณุโลก','บึงพระ','บ้านใหม่','แม่เทียบ','บางกระทุ่ม','ท่าฬ่อ','พิจิตร','วังกรด','หัวดง','ห้วยเกตุ','ตะพานหิน','ดงตะขบ','หอไกร','บางมูลนาก','วังกร่าง','ชุมแสง','คลองปลากด','ทับกฤช','บึงบอระเพ็ด','ปากน้ำโพ','นครสวรรค์','เขาทอง','เนินมะกอก','หัวงิ้ว','หนองโพ','หัวหวาย','ดงมะกุ','บ้านตาคลี','โพนทอง','ช่องแค','บ้านกกกว้าว','จันเสน','ไผ่ใหญ่','ห้วยแก้ว','บ้านหมี่','หนองทรายขาว','หนองเต่า','ชุมทางโคกกะเทียม','ท่าแค','ลพบุรี'],
+    schedule: {
+      'พิษณุโลก': { dep: '14:10' }, 'บึงพระ': { arr: '14:15', dep: '14:16' }, 'บ้านใหม่': { arr: '14:22', dep: '14:23' },
+      'แม่เทียบ': { arr: '14:30', dep: '14:31' }, 'บางกระทุ่ม': { arr: '14:35', dep: '14:36' }, 'ท่าฬ่อ': { arr: '14:43', dep: '14:44' },
+      'พิจิตร': { arr: '14:50', dep: '14:51' }, 'วังกรด': { arr: '14:58', dep: '14:59' }, 'หัวดง': { arr: '15:05', dep: '15:06' },
+      'ห้วยเกตุ': { arr: '15:13', dep: '15:14' }, 'ตะพานหิน': { arr: '15:19', dep: '15:20' }, 'ดงตะขบ': { arr: '15:27', dep: '15:28' },
+      'หอไกร': { arr: '15:34', dep: '15:35' }, 'บางมูลนาก': { arr: '15:41', dep: '15:42' }, 'วังกร่าง': { arr: '15:48', dep: '15:49' },
+      'ชุมแสง': { arr: '15:57', dep: '16:04' }, 'คลองปลากด': { arr: '16:12', dep: '16:13' }, 'ทับกฤช': { arr: '16:19', dep: '16:20' },
+      'บึงบอระเพ็ด': { arr: '16:26', dep: '16:27' }, 'ปากน้ำโพ': { arr: '16:33', dep: '16:36' }, 'นครสวรรค์': { arr: '16:41', dep: '16:46' },
+      'เขาทอง': { arr: '16:55', dep: '16:56' }, 'เนินมะกอก': { arr: '17:04', dep: '17:05' }, 'หัวงิ้ว': { arr: '17:12', dep: '17:13' },
+      'หนองโพ': { arr: '17:18', dep: '17:19' }, 'หัวหวาย': { arr: '17:26', dep: '17:27' }, 'ดงมะกุ': { arr: '17:32', dep: '17:33' },
+      'บ้านตาคลี': { arr: '17:38', dep: '17:39' }, 'โพนทอง': { arr: '17:43', dep: '17:44' }, 'ช่องแค': { arr: '17:52', dep: '17:53' },
+      'บ้านกกกว้าว': { arr: '17:57', dep: '17:58' }, 'จันเสน': { arr: '18:01', dep: '18:02' }, 'ไผ่ใหญ่': { arr: '18:07', dep: '18:08' },
+      'ห้วยแก้ว': { arr: '18:13', dep: '18:14' }, 'บ้านหมี่': { arr: '18:19', dep: '18:20' }, 'หนองทรายขาว': { arr: '18:26', dep: '18:27' },
+      'หนองเต่า': { arr: '18:32', dep: '18:33' }, 'ชุมทางโคกกะเทียม': { arr: '18:38', dep: '18:39' }, 'ท่าแค': { arr: '18:45', dep: '18:46' },
+      'ลพบุรี': { arr: '18:50' }
+    }
+  },
+  { 
+    id: '403/410', name: '403/410 ท้องถิ่น พิษณุโลก–ศิลาอาสน์–พิษณุโลก', origin: 'พิษณุโลก', dest: 'ศิลาอาสน์',
+    stops: ['พิษณุโลก','บ้านเต็งหนาม','บ้านตูม','แควน้อย','พรหมพิราม','หนองตม','บ้านบุ่ง','บ้านโคน','พิชัย','ไร่อ้อย','ชุมทางบ้านดารา','ท่าสัก','ตรอน','วังกะพี้','อุตรดิตถ์','ศิลาอาสน์'],
+    schedule: {
+      'พิษณุโลก': { dep: '05:55' }, 'บ้านเต็งหนาม': { arr: '05:59', dep: '06:00' }, 'บ้านตูม': { arr: '06:05', dep: '06:06' },
+      'แควน้อย': { arr: '06:11', dep: '06:12' }, 'พรหมพิราม': { arr: '06:20', dep: '06:21' }, 'หนองตม': { arr: '06:29', dep: '06:30' },
+      'บ้านบุ่ง': { arr: '06:38', dep: '06:39' }, 'บ้านโคน': { arr: '06:44', dep: '06:45' }, 'พิชัย': { arr: '06:53', dep: '06:54' },
+      'ไร่อ้อย': { arr: '07:00', dep: '07:01' }, 'ชุมทางบ้านดารา': { arr: '07:05', dep: '07:06' }, 'ท่าสัก': { arr: '07:10', dep: '07:11' },
+      'ตรอน': { arr: '07:18', dep: '07:19' }, 'วังกะพี้': { arr: '07:26', dep: '07:27' }, 'อุตรดิตถ์': { arr: '07:34', dep: '07:37' },
+      'ศิลาอาสน์': { arr: '07:40' }
+    }
+  },
+  { 
+    id: '407', name: '407 ท้องถิ่น นครสวรรค์–เชียงใหม่', origin: 'นครสวรรค์', dest: 'เชียงใหม่',
+    stops: ['นครสวรรค์','ปากน้ำโพ','บึงบอระเพ็ด','ทับกฤช','คลองปลากด','ชุมแสง','วังกร่าง','บางมูลนาก','หอไกร','ดงตะขบ','ตะพานหิน','ห้วยเกตุ','หัวดง','วังกรด','พิจิตร','ท่าฬ่อ','บางกระทุ่ม','แม่เทียบ','บ้านใหม่','บึงพระ','พิษณุโลก','บ้านเต็งหนาม','บ้านตูม','แควน้อย','พรหมพิราม','หนองตม','บ้านบุ่ง','บ้านโคน','พิชัย','ไร่อ้อย','ชุมทางบ้านดารา','ท่าสัก','ตรอน','วังกะพี้','อุตรดิตถ์','ศิลาอาสน์','ท่าเสา','บ้านด่าน','ปางต้นผึ้ง','เขาพลึง','ห้วยไร่','ไร่เกล็ดดาว','แม่พวก','เด่นชัย','ปากปาน','แก่งหลวง','ห้วยแม่ต้า','บ้านปิน','ผาคัน','ผาคอ','ปางป๋วย','แม่จาง','แม่เมาะ','ห้วยรากไม้','ศาลาผาลาด','แม่ทะ','หนองวัวเฒ่า','นครลำปาง','ห้างฉัตร','ปางม่วง','ห้วยเรียน','แม่ตานน้อย','ขุนตาน','ทาชมภู','ศาลาแม่ทา','หนองหล่ม','ลำพูน','ป่าเส้า','สารภี','เชียงใหม่'],
+    schedule: {
+      'นครสวรรค์': { dep: '05:00' }, 'ปากน้ำโพ': { arr: '05:04', dep: '05:05' }, 'บึงบอระเพ็ด': { arr: '05:11', dep: '05:12' },
+      'ทับกฤช': { arr: '05:18', dep: '05:19' }, 'คลองปลากด': { arr: '05:25', dep: '05:26' }, 'ชุมแสง': { arr: '05:34', dep: '05:35' },
+      'วังกร่าง': { arr: '05:43', dep: '05:44' }, 'บางมูลนาก': { arr: '05:50', dep: '05:51' }, 'หอไกร': { arr: '05:57', dep: '06:01' },
+      'ดงตะขบ': { arr: '06:07', dep: '06:08' }, 'ตะพานหิน': { arr: '06:16', dep: '06:17' }, 'ห้วยเกตุ': { arr: '06:22', dep: '06:23' },
+      'หัวดง': { arr: '06:29', dep: '06:30' }, 'วังกรด': { arr: '06:35', dep: '06:36' }, 'พิจิตร': { arr: '06:42', dep: '06:47' },
+      'ท่าฬ่อ': { arr: '06:53', dep: '06:54' }, 'บางกระทุ่ม': { arr: '07:00', dep: '07:01' }, 'แม่เทียบ': { arr: '07:05', dep: '07:06' },
+      'บ้านใหม่': { arr: '07:13', dep: '07:14' }, 'บึงพระ': { arr: '07:19', dep: '07:20' }, 'พิษณุโลก': { arr: '07:26', dep: '07:27' },
+      'บ้านเต็งหนาม': { arr: '07:31', dep: '07:32' }, 'บ้านตูม': { arr: '07:37', dep: '07:38' }, 'แควน้อย': { arr: '07:43', dep: '07:44' },
+      'พรหมพิราม': { arr: '07:51', dep: '07:52' }, 'หนองตม': { arr: '07:59', dep: '08:00' }, 'บ้านบุ่ง': { arr: '08:07', dep: '08:08' },
+      'บ้านโคน': { arr: '08:12', dep: '08:13' }, 'พิชัย': { arr: '08:21', dep: '08:22' }, 'ไร่อ้อย': { arr: '08:27', dep: '08:28' },
+      'ชุมทางบ้านดารา': { arr: '08:32', dep: '08:33' }, 'ท่าสัก': { arr: '08:37', dep: '08:38' }, 'ตรอน': { arr: '08:45', dep: '08:46' },
+      'วังกะพี้': { arr: '08:52', dep: '08:53' }, 'อุตรดิตถ์': { arr: '09:00', dep: '09:03' }, 'ศิลาอาสน์': { arr: '09:06', dep: '09:14' },
+      'ท่าเสา': { arr: '09:16', dep: '09:17' }, 'บ้านด่าน': { arr: '09:24', dep: '09:25' }, 'ปางต้นผึ้ง': { arr: '09:37', dep: '09:38' },
+      'เขาพลึง': { arr: '09:48', dep: '09:49' }, 'ห้วยไร่': { arr: '09:55', dep: '09:56' }, 'ไร่เกล็ดดาว': { arr: '10:00', dep: '10:01' },
+      'แม่พวก': { arr: '10:04', dep: '10:05' }, 'เด่นชัย': { arr: '10:11', dep: '10:12' }, 'ปากปาน': { arr: '10:16', dep: '10:17' },
+      'แก่งหลวง': { arr: '10:27', dep: '10:31' }, 'ห้วยแม่ต้า': { arr: '10:40', dep: '10:41' }, 'บ้านปิน': { arr: '10:52', dep: '10:58' },
+      'ผาคัน': { arr: '11:17', dep: '11:18' }, 'ผาคอ': { arr: '11:22', dep: '11:23' }, 'ปางป๋วย': { arr: '11:37', dep: '11:38' },
+      'แม่จาง': { arr: '11:48', dep: '11:49' }, 'แม่เมาะ': { arr: '11:57', dep: '11:58' }, 'ห้วยรากไม้': { arr: '12:06', dep: '12:07' },
+      'ศาลาผาลาด': { arr: '12:15', dep: '12:19' }, 'แม่ทะ': { arr: '12:25', dep: '12:26' }, 'หนองวัวเฒ่า': { arr: '12:34', dep: '12:35' },
+      'นครลำปาง': { arr: '12:40', dep: '12:43' }, 'ห้างฉัตร': { arr: '12:52', dep: '12:53' }, 'ปางม่วง': { arr: '12:59', dep: '13:00' },
+      'ห้วยเรียน': { arr: '13:06', dep: '13:07' }, 'แม่ตานน้อย': { arr: '13:16', dep: '13:17' }, 'ขุนตาน': { arr: '13:35', dep: '13:36' },
+      'ทาชมภู': { arr: '13:47', dep: '13:48' }, 'ศาลาแม่ทา': { arr: '13:55', dep: '13:56' }, 'หนองหล่ม': { arr: '14:06', dep: '14:07' },
+      'ลำพูน': { arr: '14:21', dep: '14:22' }, 'ป่าเส้า': { arr: '14:28', dep: '14:29' }, 'สารภี': { arr: '14:36', dep: '14:37' },
+      'เชียงใหม่': { arr: '14:45' }
+    }
+  },
+  { 
+    id: '408', name: '408 ท้องถิ่น เชียงใหม่–นครสวรรค์', origin: 'เชียงใหม่', dest: 'นครสวรรค์',
+    stops: ['เชียงใหม่','สารภี','ป่าเส้า','ลำพูน','หนองหล่ม','ศาลาแม่ทา','ทาชมภู','ขุนตาน','แม่ตานน้อย','ห้วยเรียน','ปางม่วง','ห้างฉัตร','นครลำปาง','หนองวัวเฒ่า','แม่ทะ','ศาลาผาลาด','ห้วยรากไม้','แม่เมาะ','แม่จาง','ปางป๋วย','ผาคอ','ผาคัน','บ้านปิน','ห้วยแม่ต้า','แก่งหลวง','ปากปาน','เด่นชัย','แม่พวก','ไร่เกล็ดดาว','ห้วยไร่','เขาพลึง','ปางต้นผึ้ง','บ้านด่าน','ท่าเสา','ศิลาอาสน์','อุตรดิตถ์','วังกะพี้','ตรอน','ท่าสัก','ชุมทางบ้านดารา','ไร่อ้อย','พิชัย','บ้านโคน','บ้านบุ่ง','หนองตม','พรหมพิราม','แควน้อย','บ้านตูม','บ้านเต็งหนาม','พิษณุโลก','บึงพระ','บ้านใหม่','แม่เทียบ','บางกระทุ่ม','ท่าฬ่อ','พิจิตร','วังกรด','หัวดง','ห้วยเกตุ','ตะพานหิน','ดงตะขบ','หอไกร','บางมูลนาก','วังกร่าง','ชุมแสง','คลองปลากด','ทับกฤช','บึงบอระเพ็ด','ปากน้ำโพ','นครสวรรค์'],
+    schedule: {
+      'เชียงใหม่': { dep: '09:35' }, 'สารภี': { arr: '09:44', dep: '09:45' }, 'ป่าเส้า': { arr: '09:53', dep: '09:54' },
+      'ลำพูน': { arr: '10:01', dep: '10:02' }, 'หนองหล่ม': { arr: '10:17', dep: '10:18' }, 'ศาลาแม่ทา': { arr: '10:29', dep: '10:30' },
+      'ทาชมภู': { arr: '10:39', dep: '10:44' }, 'ขุนตาน': { arr: '10:57', dep: '10:58' }, 'แม่ตานน้อย': { arr: '11:14', dep: '11:15' },
+      'ห้วยเรียน': { arr: '11:25', dep: '11:26' }, 'ปางม่วง': { arr: '11:32', dep: '11:33' }, 'ห้างฉัตร': { arr: '11:41', dep: '11:42' },
+      'นครลำปาง': { arr: '11:51', dep: '11:54' }, 'หนองวัวเฒ่า': { arr: '11:59', dep: '12:00' }, 'แม่ทะ': { arr: '12:09', dep: '12:10' },
+      'ศาลาผาลาด': { arr: '12:17', dep: '12:18' }, 'ห้วยรากไม้': { arr: '12:28', dep: '12:29' }, 'แม่เมาะ': { arr: '12:36', dep: '12:37' },
+      'แม่จาง': { arr: '12:46', dep: '12:47' }, 'ปางป๋วย': { arr: '12:58', dep: '12:59' }, 'ผาคอ': { arr: '13:14', dep: '13:15' },
+      'ผาคัน': { arr: '13:20', dep: '13:21' }, 'บ้านปิน': { arr: '13:40', dep: '13:41' }, 'ห้วยแม่ต้า': { arr: '13:51', dep: '13:52' },
+      'แก่งหลวง': { arr: '14:00', dep: '14:09' }, 'ปากปาน': { arr: '14:20', dep: '14:21' }, 'เด่นชัย': { arr: '14:26', dep: '14:27' },
+      'แม่พวก': { arr: '14:34', dep: '14:35' }, 'ไร่เกล็ดดาว': { arr: '14:39', dep: '14:40' }, 'ห้วยไร่': { arr: '14:45', dep: '14:46' },
+      'เขาพลึง': { arr: '14:52', dep: '14:53' }, 'ปางต้นผึ้ง': { arr: '15:02', dep: '15:03' }, 'บ้านด่าน': { arr: '15:15', dep: '15:16' },
+      'ท่าเสา': { arr: '15:23', dep: '15:24' }, 'ศิลาอาสน์': { arr: '15:27', dep: '15:35' }, 'อุตรดิตถ์': { arr: '15:38', dep: '15:41' },
+      'วังกะพี้': { arr: '15:47', dep: '15:48' }, 'ตรอน': { arr: '15:54', dep: '15:55' }, 'ท่าสัก': { arr: '16:01', dep: '16:02' },
+      'ชุมทางบ้านดารา': { arr: '16:05', dep: '16:06' }, 'ไร่อ้อย': { arr: '16:10', dep: '16:11' }, 'พิชัย': { arr: '16:16', dep: '16:17' },
+      'บ้านโคน': { arr: '16:25', dep: '16:26' }, 'บ้านบุ่ง': { arr: '16:30', dep: '16:31' }, 'หนองตม': { arr: '16:38', dep: '16:39' },
+      'พรหมพิราม': { arr: '16:46', dep: '16:47' }, 'แควน้อย': { arr: '16:54', dep: '16:55' }, 'บ้านตูม': { arr: '17:00', dep: '17:01' },
+      'บ้านเต็งหนาม': { arr: '17:06', dep: '17:07' }, 'พิษณุโลก': { arr: '17:11', dep: '17:12' }, 'บึงพระ': { arr: '17:18', dep: '17:19' },
+      'บ้านใหม่': { arr: '17:25', dep: '17:26' }, 'แม่เทียบ': { arr: '17:33', dep: '17:34' }, 'บางกระทุ่ม': { arr: '17:38', dep: '17:39' },
+      'ท่าฬ่อ': { arr: '17:46', dep: '17:47' }, 'พิจิตร': { arr: '17:54', dep: '17:55' }, 'วังกรด': { arr: '18:02', dep: '18:03' },
+      'หัวดง': { arr: '18:09', dep: '18:10' }, 'ห้วยเกตุ': { arr: '18:17', dep: '18:18' }, 'ตะพานหิน': { arr: '18:24', dep: '18:25' },
+      'ดงตะขบ': { arr: '18:33', dep: '18:34' }, 'หอไกร': { arr: '18:40', dep: '18:45' }, 'บางมูลนาก': { arr: '18:52', dep: '18:53' },
+      'วังกร่าง': { arr: '18:59', dep: '19:03' }, 'ชุมแสง': { arr: '19:11', dep: '19:12' }, 'คลองปลากด': { arr: '19:19', dep: '19:20' },
+      'ทับกฤช': { arr: '19:26', dep: '19:27' }, 'บึงบอระเพ็ด': { arr: '19:32', dep: '19:33' }, 'ปากน้ำโพ': { arr: '19:39', dep: '19:40' },
+      'นครสวรรค์': { arr: '19:45' }
+    }
+  }
+];
+
+const $ = id => document.getElementById(id);
+const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => ESC_MAP[ch]);
+const NUM_INT = new Intl.NumberFormat(getLang() === 'en' ? 'en-US' : 'th-TH');
+const NUM_DEC = new Intl.NumberFormat(getLang() === 'en' ? 'en-US' : 'th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const money = v => { const n = Number(v); return Number.isFinite(n) ? (Number.isInteger(n) ? NUM_INT : NUM_DEC).format(n) : '0'; };
+const pad2 = n => String(n).padStart(2, '0');
+
+const STORAGE = {
+  get(key, fallback) { try { const raw = localStorage.getItem(key); return raw === null ? fallback : JSON.parse(raw); } catch { return fallback; } },
+  set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
+};
+
+const STATION_KM = new Map(northStations.map(s => [s.name, Number(s.km)]));
+const STATION_NAMES = northStations.map(s => s.name);
+const TRAIN_BY_ID = new Map(northSchedules.map(t => [t.id, t]));
+const NONRESERVED_RE = /(ธรรมดา|ชานเมือง|ท้องถิ่น|ที่นั่งอิสระ)/;
+
+const getKm = name => STATION_KM.get(name) ?? null;
+const exactStation = name => STATION_KM.has(name);
+const getTrain = id => TRAIN_BY_ID.get(id) || null;
+
+function getReservationType(train) {
+  if (!train) return '';
+  return (train._type ??= NONRESERVED_RE.test(`${train.id} ${train.name}`) ? 'nonreserved' : 'reserved');
+}
+
+function activeStationNames(train) {
+  if (!train) return STATION_NAMES;
+  if (train.stops?.length) return train.stops.filter(exactStation);
+  const a = getKm(train.origin), b = getKm(train.dest);
+  if (a === null || b === null) return [];
+  const lo = Math.min(a, b), hi = Math.max(a, b);
+  return STATION_NAMES.filter(n => { const km = STATION_KM.get(n); return km >= lo && km <= hi; });
+}
+
+function getAvailableTrains(origin, dest) {
+  if (!origin || !dest || origin === dest) return [];
+  const oKm = getKm(origin), dKm = getKm(dest);
+  if (oKm === null || dKm === null) return [];
+  const isUp = oKm < dKm;
+
+  return northSchedules.filter(train => {
+    const tOrgKm = getKm(train.origin);
+    const tDstKm = getKm(train.dest);
+    if (tOrgKm === null || tDstKm === null) return false;
+    const trainIsUp = tOrgKm < tDstKm;
+    if (trainIsUp !== isUp) return false;
+
+    const stops = activeStationNames(train);
+    if (!stops.includes(origin) || !stops.includes(dest)) return false;
+
+    const trainMin = Math.min(tOrgKm, tDstKm);
+    const trainMax = Math.max(tOrgKm, tDstKm);
+    return oKm >= trainMin && oKm <= trainMax && dKm >= trainMin && dKm <= trainMax;
+  });
+}
+
+const BKK_DAY_FMT = new Intl.DateTimeFormat('en-CA', { timeZone: REMINDER_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' });
+const BKK_DT_FMT = new Intl.DateTimeFormat('en-CA', { timeZone: REMINDER_ZONE, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const fmtParts = (fmt, d) => Object.fromEntries(fmt.formatToParts(d).map(p => [p.type, p.value]));
+
+const bangkokToday = () => { const p = fmtParts(BKK_DAY_FMT, new Date()); return `${p.year}-${p.month}-${p.day}`; };
+
+function formatDateLocale(date) {
+  if (!date) return '';
+  const lang = getLang();
+  if (lang === 'en') {
+    return `${ENG_MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  }
+  return `${date.getDate()} ${THAI_MONTHS[date.getMonth()]} ${date.getFullYear() + 543}`;
+}
+
+const bangkokDateLabel = iso => formatDateLocale(new Date(iso + 'T12:00:00+07:00'));
+const toLocalISO = (d = new Date()) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const calendarStamp = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+
+function parseLocalDate(value) {
+  if (!DATE_RE.test(value || '')) return null;
+  const [y, m, d] = value.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d ? date : null;
+}
+function localDateOnly(date) {
+  return date ? new Date(date.getFullYear(), date.getMonth(), date.getDate()) : parseLocalDate(bangkokToday());
+}
+const daysUntil = date => Math.round((localDateOnly(date) - localDateOnly()) / DAY_MS);
+function shiftISODate(iso, days) {
+  if (!parseLocalDate(iso)) return null;
+  const d = new Date(iso + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+function bangkokInstant(iso, time) {
+  if (!parseLocalDate(iso) || !TIME_RE.test(time || '')) return null;
+  return new Date(`${iso}T${time}:00+07:00`);
+}
+function thaiDateText(iso) {
+  const d = parseLocalDate(iso);
+  if (!d) return '';
+  const lang = getLang();
+  if (lang === 'en') {
+    return `${ENG_MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+  return `${d.getDate()} ${THAI_MONTHS[d.getMonth()]} ${d.getFullYear() + 543}`;
+}
+
+const state = {
+  lastStationField: 'passOrigin',
+  lastBookingResult: null,
+  bookingHistory: STORAGE.get(LS_KEY.history, []),
+  favorites: STORAGE.get(LS_KEY.fav, [])
+};
+const el = {
+  travelDate: $('travelDate'), selectedTrain: $('selectedTrain'),
+  passOrigin: $('passOrigin'), passDest: $('passDest'),
+  distanceSummary: $('distanceSummary'), totalKmText: $('totalKmText'),
+  passengerKmText: $('passengerKmText'), percentageText: $('percentageText'),
+  bookingResult: $('bookingResult'), bookingHistory: $('bookingHistory'),
+  favoriteChips: $('favoriteChips'),
+  favOriginBtn: $('favOriginBtn'), favDestBtn: $('favDestBtn'),
+  stationSearch: $('stationSearch'), stationOptions: $('stationOptions'),
+  toast: $('toast')
+};
+const thaiPicker = { field: null, year: 0, month: 0 };
+let stationPickerField = null;
+let reminderResult = null;
+
+const pickerStationNames = () => STATION_NAMES;
+
+function updateTrainDropdown() {
+  const origin = el.passOrigin.value.trim();
+  const dest = el.passDest.value.trim();
+  const currentTrainId = el.selectedTrain.value;
+
+  if (!origin || !dest || origin === dest) {
+    el.selectedTrain.innerHTML = `<option value="">${esc(t('noTrainPrompt'))}</option>`;
+    el.selectedTrain.disabled = true;
+    el.selectedTrain.value = '';
+    return;
+  }
+
+  const available = getAvailableTrains(origin, dest);
+  if (!available.length) {
+    el.selectedTrain.innerHTML = `<option value="">${esc(t('noTrainOption'))}</option>`;
+    el.selectedTrain.disabled = true;
+    el.selectedTrain.value = '';
+    return;
+  }
+
+  el.selectedTrain.disabled = false;
+  el.selectedTrain.innerHTML = `<option value="">${esc(t('noTrainSelected'))}</option>` +
+    available.map(tr => {
+      const formattedName = formatTrainName(tr.name);
+      const boldName = formattedName.replace(/^(\d+(?:\/\d+)?)/, '$1');
+      return `<option value="${esc(tr.id)}">${esc(boldName)}</option>`;
+    }).join('');
+
+  if (available.some(tr => tr.id === currentTrainId)) {
+    el.selectedTrain.value = currentTrainId;
+  }
+}
+
+function getBookingInputs() {
+  const train = getTrain(el.selectedTrain.value);
+  const origin = el.passOrigin.value.trim(), destination = el.passDest.value.trim();
+  const isNonReserved = getReservationType(train) === 'nonreserved';
+  
+  if (isNonReserved) {
+    return {
+      travelDate: parseLocalDate(el.travelDate.value),
+      train,
+      reservationType: 'nonreserved',
+      total: 0, passenger: 0, routeValid: true,
+      origin, destination
+    };
+  }
+
+  const t1 = getKm(train?.origin), t2 = getKm(train?.dest), p1 = getKm(origin), p2 = getKm(destination);
+  const fin = Number.isFinite;
+  let total = NaN, passenger = NaN, routeValid = true;
+  if (fin(t1) && fin(t2)) total = Math.abs(t2 - t1);
+  if (fin(p1) && fin(p2)) passenger = Math.abs(p2 - p1);
+  if (fin(t1) && fin(t2) && fin(p1) && fin(p2)) {
+    const lo = Math.min(t1, t2), hi = Math.max(t1, t2);
+    routeValid = p1 >= lo && p1 <= hi && p2 >= lo && p2 <= hi;
+  }
+  return { travelDate: parseLocalDate(el.travelDate.value), train, reservationType: 'reserved', total, passenger, routeValid, origin, destination };
+}
+const getBookingSnapshot = () => ({ date: el.travelDate.value, train: el.selectedTrain.value, origin: el.passOrigin.value, dest: el.passDest.value });
+
+function bookingMessage(icon, title, html) {
+  state.lastBookingResult = null;
+  el.distanceSummary.classList.add('hidden');
+  el.bookingResult.innerHTML = `<div class="empty"><div class="empty-icon">${icon}</div><h3>${title}</h3><p>${html}</p></div>`;
+}
+const bookingEmpty = (msg = t('emptySub')) => bookingMessage('🚆', t('emptyTitle'), msg);
+const bookingError = msg => bookingMessage('⚠️', t('errorTitle'), esc(msg));
+
+function updateDistanceSummary(total, passenger) {
+  if (!(Number.isFinite(total) && Number.isFinite(passenger) && total > 0 && passenger > 0)) {
+    el.distanceSummary.classList.add('hidden');
+    return;
+  }
+  el.distanceSummary.classList.remove('hidden');
+  el.totalKmText.textContent = `${money(total)} กม.`;
+  el.passengerKmText.textContent = `${money(passenger)} กม.`;
+  el.percentageText.textContent = `${(passenger / total * 100).toFixed(2)}%`;
+}
+
+function routeMarkup(d) {
+  let origTime = '', destTime = '';
+  const lang = getLang();
+  if (d.train?.schedule) {
+    if (d.train.schedule[d.origin]?.dep) {
+      origTime = lang === 'en' ? `Dep ${d.train.schedule[d.origin].dep}` : `ออก ${d.train.schedule[d.origin].dep} น.`;
+    } else if (d.train.schedule[d.origin]?.arr) {
+      origTime = lang === 'en' ? `Arr ${d.train.schedule[d.origin].arr}` : `ถึง ${d.train.schedule[d.origin].arr} น.`;
+    }
+    
+    if (d.train.schedule[d.destination]?.arr) {
+      destTime = lang === 'en' ? `Arr ${d.train.schedule[d.destination].arr}` : `ถึง ${d.train.schedule[d.destination].arr} น.`;
+    } else if (d.train.schedule[d.destination]?.dep) {
+      destTime = lang === 'en' ? `Dep ${d.train.schedule[d.destination].dep}` : `ออก ${d.train.schedule[d.destination].dep} น.`;
+    }
+  }
+  
+  return `
+    <div class="route-line">
+      <div class="station">${esc(formatStationName(d.origin))}<small>${origTime}</small></div>
+      <div class="arrow">➜</div>
+      <div class="station">${esc(formatStationName(d.destination))}<small>${destTime}</small></div>
+    </div>`;
+}
+
+function bookingActions(non) {
+  return `
+    <div class="reminder-entry">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg>
+      <div><b>${non ? t('remindTravelBtn') : t('remindBookingBtn')}</b><span>Google Calendar / Text</span></div>
+      <button type="button" data-action="remind-booking">${getLang() === 'en' ? 'Set Reminder' : 'ตั้งเตือน'}</button>
+    </div>
+    <div class="result-actions">
+      <a class="action-btn primary" href="${APP_CONFIG.dticketUrl}" target="_blank" rel="noopener noreferrer">${t('dticketBtn')}</a>
+      <button class="action-btn" type="button" data-action="copy-booking">${t('copyResBtn')}</button>
+      <button class="action-btn" type="button" data-action="share-booking">${t('shareResBtn')}</button>
+    </div>`;
+}
+
+const bookingDaysFromPercentage = p => p >= 60 ? 90 : p >= 25 ? 30 : 1;
+
+function statusForOpenDate(openDate, openTime = '08:30') {
+  if (new Date() >= bangkokInstant(toLocalISO(openDate), openTime)) {
+    return { kind: 'open', text: t('statusOpen'), detail: t('statusOpenDesc') };
+  }
+  const diff = daysUntil(openDate);
+  if (diff === 0) return { kind: 'waiting', text: `${t('statusToday')} ${openTime}`, detail: 'ยังไม่ถึงเวลาเปิดจอง' };
+  if (diff === 1) return { kind: 'waiting', text: `${t('statusTomor')} ${openTime}`, detail: 'เตรียมทำรายการล่วงหน้าได้' };
+  return { kind: 'waiting', text: `${t('statusDays')} ${Math.max(diff, 0).toLocaleString()} ${t('statusDaysSuffix')}`, detail: `${t('statusStartOn')} ${formatDateLocale(openDate)} ${t('statusAtTime')} ${openTime} ${t('statusSuffixText')}` };
+}
+
+function calculateBooking() {
+  syncDateControls();
+  renderFavoriteButtons();
+  updateTrainDropdown();
+  const d = getBookingInputs();
+
+  if (!d.travelDate) return bookingEmpty();
+  if (d.travelDate < localDateOnly()) return bookingError('วันที่เดินทางผ่านไปแล้ว กรุณาเลือกวันนี้หรือวันในอนาคต');
+  if (!d.origin || !d.destination) return bookingEmpty();
+  if (!exactStation(d.origin) || !exactStation(d.destination)) return bookingError('กรุณาเลือกสถานีจากรายการที่กำหนด');
+  if (d.origin === d.destination) return bookingError('สถานีต้นทางและปลายทางต้องเป็นคนละสถานีกัน');
+  if (!d.train) return bookingEmpty();
+
+  if (d.reservationType === 'nonreserved') {
+    return renderNonReservedResult(d);
+  }
+
+  const stops = activeStationNames(d.train);
+  if (!stops.includes(d.origin) || !stops.includes(d.destination)) return bookingError('สถานีที่เลือกไม่อยู่ในจุดจอดหรือช่วงวิ่งของขบวนรถนี้');
+
+  if (!Number.isFinite(d.total) || !Number.isFinite(d.passenger)) return bookingEmpty();
+  if (!d.routeValid) return bookingError('สถานีต้นทางและปลายทางต้องอยู่ภายในช่วงวิ่งของขบวน');
+  if (d.total <= 0 || d.passenger <= 0) return bookingError('ระยะทางต้องมากกว่า 0 กิโลเมตร');
+  if (d.passenger > d.total) return bookingError('ระยะทางผู้โดยสารต้องไม่เกินระยะทางวิ่งทั้งหมดของขบวน');
+
+  updateDistanceSummary(d.total, d.passenger);
+  renderStandardBooking(d);
+}
+
+function renderNonReservedResult(d) {
+  updateDistanceSummary(d.total, d.passenger);
+  const travelText = formatDateLocale(d.travelDate);
+  const tName = formatTrainName(d.train.name);
+  const formattedTrainName = tName.replace(/^(\d+(?:\/\d+)?)/, '<b>$1</b>');
+  const result = {
+    type: 'nonreserved', createdAt: new Date().toISOString(), travelDate: toLocalISO(d.travelDate),
+    origin: d.origin, destination: d.destination, trainId: d.train.id, trainName: tName,
+    headline: t('nonReservedHeader'), summary: getLang() === 'en' ? BOOKING_RULES.nonReservedTextEN : BOOKING_RULES.nonReservedTextTH,
+    copyText: `🚆 ${tName}\n📍 ${formatStationName(d.origin)} → ${formatStationName(d.destination)}\n📅 ${travelText}\n🎫 ${getLang() === 'en' ? BOOKING_RULES.nonReservedTextEN : BOOKING_RULES.nonReservedTextTH}`
+  };
+  state.lastBookingResult = result;
+  el.bookingResult.innerHTML = `
+    <div class="result-card">
+      <div class="result-top">
+        <div><div class="kicker">${formattedTrainName}</div><h3>${t('nonReservedSub')}</h3></div>
+        <span class="status info">${t('nonReservedBadge')}</span>
+      </div>
+      <div class="result-main">
+        ${routeMarkup(d)}
+        <div class="big-result">
+          <span>Ticket Status</span>
+          <strong style="font-size:28px">${t('nonReservedHeader')}</strong>
+          <small>${t('nonReservedNotice')}</small>
+        </div>
+        <div class="date-panel"><div class="label">Travel Date</div><div class="date">${travelText}</div></div>
+        <div class="note warning">${t('nonReservedDesc')}</div>
+        ${bookingActions(true)}
+      </div>
+    </div>`;
+  saveBookingHistory(result);
+}
+
+function findBest90DaysPair(train, currentOrigin, currentDest) {
+  const stops = activeStationNames(train);
+  if (stops.length < 2) return null;
+  const tOrgKm = getKm(train.origin);
+  const tDstKm = getKm(train.dest);
+  const totalTrainDist = Math.abs(tDstKm - tOrgKm);
+  if (totalTrainDist <= 0) return null;
+
+  let candidates = [];
+  for (let i = 0; i < stops.length; i++) {
+    for (let j = i + 1; j < stops.length; j++) {
+      const s1 = stops[i];
+      const s2 = stops[j];
+      const dist = Math.abs(getKm(s1) - getKm(s2));
+      const ratio = (dist / totalTrainDist) * 100;
+      if (ratio >= 60) {
+        candidates.push({ origin: s1, dest: s2, dist, diff: Math.abs(ratio - 60) });
+      }
+    }
+  }
+
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => a.dist - b.dist);
+  const preferred = candidates.find(c => c.origin === currentOrigin || c.dest === currentDest);
+  return preferred || candidates[0];
+}
+
+function renderStandardBooking(d) {
+  const percentage = d.passenger / d.total * 100;
+  const pct = percentage.toFixed(2);
+  const days = bookingDaysFromPercentage(percentage);
+  const bookingDate = new Date(d.travelDate);
+  bookingDate.setDate(bookingDate.getDate() - days);
+  const openTime = BOOKING_RULES.standardOpenTime;
+  const status = statusForOpenDate(bookingDate, openTime);
+  const bookingText = formatDateLocale(bookingDate);
+  const tName = formatTrainName(d.train.name);
+  const formattedTrainName = tName.replace(/^(\d+(?:\/\d+)?)/, '<b>$1</b>');
+
+  let tipBoxHtml = '';
+  if (days < 90) {
+    const best = findBest90DaysPair(d.train, d.origin, d.destination);
+    if (best) {
+      tipBoxHtml = `<div class="note tip">💡 <b>Tip:</b> ${t('suggestionTip')} <b>${esc(formatStationName(best.origin))} ➜ ${esc(formatStationName(best.dest))}</b> <br><button type="button" class="suggest-btn" data-suggest-origin="${esc(best.origin)}" data-suggest-dest="${esc(best.dest)}">${t('suggestBtnText')}</button></div>`;
+    } else {
+      tipBoxHtml = `<div class="note tip">💡 <b>Tip:</b> ${t('generalTip')}</div>`;
+    }
+  }
+
+  const result = {
+    type: 'standard', createdAt: new Date().toISOString(), travelDate: toLocalISO(d.travelDate),
+    origin: d.origin, destination: d.destination, trainId: d.train.id, trainName: tName,
+    total: d.total, passenger: d.passenger, percentage, days,
+    bookingDate: toLocalISO(bookingDate), openTime,
+    headline: `Advance ${days} Days`,
+    summary: `Open ${bookingText}`,
+    copyText: `🚆 ${tName}\n📍 ${formatStationName(d.origin)} → ${formatStationName(d.destination)}\n📅 Date: ${formatDateLocale(d.travelDate)}\n✅ Advance: ${days} days\n🗓️ Opening: ${bookingText} at ${openTime}`
+  };
+  state.lastBookingResult = result;
+
+  el.bookingResult.innerHTML = `
+    <div class="result-card">
+      <div class="result-top">
+        <div><div class="kicker">${formattedTrainName}</div><h3>${esc(formatStationName(d.origin))} → ${esc(formatStationName(d.destination))}</h3></div>
+        <span class="status ${status.kind}">${status.kind === 'open' ? '✓' : '⏳'} ${esc(status.text)}</span>
+      </div>
+      <div class="result-main">
+        ${routeMarkup(d)}
+        <div class="big-result">
+          <span>${t('maxAdvance')}</span>
+          <strong>${days} Days</strong>
+          <small>${t('calcRatio')} ${pct}%</small>
+        </div>
+        <div class="date-panel">
+          <div class="label">${t('firstTicketDate')}</div>
+          <div class="date">${bookingText}</div>
+          <div class="time">${t('openTimePrefix')} ${openTime} ${t('openTimeSuffix')}</div>
+        </div>
+        <div class="result-grid">
+          <div class="result-mini"><span>${t('trainDistLabel')}</span><strong>${money(d.total)} km</strong></div>
+          <div class="result-mini"><span>${t('passDistLabel')}</span><strong>${money(d.passenger)} km</strong></div>
+        </div>
+        ${tipBoxHtml}
+        <div class="note warning">${esc(status.detail)}</div>
+        ${bookingActions(false)}
+      </div>
+    </div>`;
+  saveBookingHistory(result);
+}
+
+function saveBookingHistory(r) {
+  if (!r) return;
+  const key = [r.type, r.travelDate, r.origin, r.destination, r.trainId, r.days].join('|');
+  if (state.bookingHistory[0]?.key === key) return;
+  state.bookingHistory = [{
+    key,
+    title: `${r.headline} (${formatStationName(r.origin)} → ${formatStationName(r.destination)})`,
+    subtitle: `Train ${r.trainId} • ${formatDateLocale(parseLocalDate(r.travelDate))}`,
+    restore: getBookingSnapshot()
+  }, ...state.bookingHistory.filter(x => x.key !== key)].slice(0, APP_CONFIG.historyLimit);
+  STORAGE.set(LS_KEY.history, state.bookingHistory);
+  renderHistories();
+}
+
+function renderHistories() {
+  el.bookingHistory.innerHTML = state.bookingHistory.length
+    ? state.bookingHistory.map((x, i) => `<button type="button" class="history-item" data-history="${i}"><b>${esc(x.title)}</b><span>${esc(x.subtitle)}</span></button>`).join('')
+    : `<div class="note info" style="margin-top:0">${t('noHistory')}</div>`;
+}
+
+function restoreBooking(s) {
+  if (!s) return;
+  el.travelDate.value = s.date || '';
+  el.passOrigin.value = s.origin || '';
+  el.passDest.value = s.dest || '';
+  updateTrainDropdown();
+  el.selectedTrain.value = s.train || '';
+  calculateBooking();
+  showToast(t('toastRestored'));
+}
+
+function saveFavorites() {
+  STORAGE.set(LS_KEY.fav, state.favorites);
+  renderFavorites();
+}
+
+function toggleFavorite(station) {
+  if (!station || !exactStation(station)) return;
+  const i = state.favorites.indexOf(station);
+  if (i >= 0) {
+    state.favorites.splice(i, 1);
+    showToast(t('toastFavRemoved'));
+  } else {
+    state.favorites = [station, ...state.favorites.filter(n => n !== station)].slice(0, 10);
+    showToast(t('toastFavAdded'));
+  }
+  saveFavorites();
+  renderFavoriteButtons();
+}
+
+function renderFavorites() {
+  el.favoriteChips.innerHTML = state.favorites.length
+    ? state.favorites.map(n => `<button class="chip" type="button" data-favorite="${esc(n)}">${esc(formatStationName(n))}</button>`).join('')
+    : `<span class="chip muted">⭐ Favorite Stations</span>`;
+}
+
+function renderFavoriteButtons() {
+  for (const [btn, val] of [[el.favOriginBtn, el.passOrigin.value], [el.favDestBtn, el.passDest.value]]) {
+    const on = !!val && state.favorites.includes(val);
+    btn.classList.toggle('active', on);
+    btn.textContent = on ? '★' : '☆';
+  }
+}
+
+function initTrains() {
+  el.selectedTrain.innerHTML = `<option value="">${esc(t('noTrainPrompt'))}</option>`;
+  el.selectedTrain.disabled = true;
+}
+
+function openStationPicker(field) {
+  if (!STATION_FIELD_LABELS[field]) return;
+  stationPickerField = field;
+  state.lastStationField = field;
+  $('stationPickerTitle').textContent = t('pickerDlgTitle') + ': ' + t(STATION_FIELD_LABELS[field]);
+  $('stationPickerContext').textContent = t('pickerDlgSub');
+  el.stationSearch.value = '';
+  renderStationPicker();
+  $('stationPickerDialog').showModal();
+}
+
+function renderStationPicker() {
+  if (!stationPickerField) return;
+  const all = pickerStationNames();
+  const query = el.stationSearch.value.trim().toLowerCase();
+  const names = query ? all.filter(n => n.toLowerCase().includes(query) || (STATION_EN_MAP[n] && STATION_EN_MAP[n].toLowerCase().includes(query))) : all;
+  const pinnedSet = new Set([...QUICK_STATIONS, ...state.favorites]);
+  const selected = $(stationPickerField).value;
+  const pinned = [], remaining = [];
+  for (const n of names) (pinnedSet.has(n) ? pinned : remaining).push(n);
+
+  const option = n => `<button type="button" class="station-option" data-station="${esc(n)}" aria-pressed="${n === selected}"><span>${n === 'พิษณุโลก' ? '📌 ' : ''}${esc(formatStationName(n))}</span><small>${n === selected ? '✓ Selected' : `${money(getKm(n))} km`}</small></button>`;
+
+  el.stationOptions.innerHTML = !names.length
+    ? `<div class="station-no-results">${t('noStationsFound')}</div>`
+    : (pinned.length ? `<div class="station-group">${t('stationGroupPinned')}</div>${pinned.map(option).join('')}<div class="station-group">${t('stationGroupAll')}</div>` : '') + remaining.map(option).join('');
+
+  $('stationCount').textContent = query ? `${t('pickerFound')} ${names.length} ${t('pickerFoundEnd')}` : `${all.length} ${t('pickerCount')}`;
+  $('clearStationSearchBtn').classList.toggle('hidden', !query);
+}
+
+function choosePickerStation(name) {
+  if (!stationPickerField) return;
+  $(stationPickerField).value = name;
+  $('stationPickerDialog').close();
+  calculateBooking();
+}
+
+const DATE_FIELD_EMPTY = { travelDate: 'travelDateBtnText', reminderDate: 'travelDateBtnText' };
+
+function syncDateControls() {
+  for (const id in DATE_FIELD_EMPTY) {
+    const text = thaiDateText($(id).value);
+    $(id + 'Label').textContent = text || t(DATE_FIELD_EMPTY[id]);
+    $(id + 'PickerBtn').classList.toggle('is-empty', !text);
+  }
+}
+
+function pickerDateBounds() {
+  const f = $(thaiPicker.field);
+  return { min: f.min || bangkokToday(), max: f.max || '' };
+}
+const pickerDateAllowed = (iso, b = pickerDateBounds()) => !!parseLocalDate(iso) && iso >= b.min && (!b.max || iso <= b.max);
+function calendarMonthAllowed(year, month, b = pickerDateBounds()) {
+  const ym = `${year}-${pad2(month + 1)}-`;
+  return `${ym}${pad2(new Date(year, month + 1, 0).getDate())}` >= b.min && (!b.max || `${ym}01` <= b.max);
+}
+
+function openThaiDatePicker(field) {
+  if (!(field in DATE_FIELD_EMPTY)) return;
+  thaiPicker.field = field;
+  const f = $(field), min = f.min || bangkokToday(), max = f.max || '';
+  let iso = parseLocalDate(f.value) ? f.value : bangkokToday();
+  if (iso < min) iso = min;
+  if (max && iso > max) iso = max;
+  const d = parseLocalDate(iso);
+  thaiPicker.year = d.getFullYear();
+  thaiPicker.month = d.getMonth();
+  renderThaiCalendar();
+  $('thaiDateDialog').showModal();
+}
+
+function renderThaiCalendar() {
+  const { field, year: y, month: m } = thaiPicker;
+  if (!field) return;
+  const b = pickerDateBounds(), selected = $(field).value, today = bangkokToday();
+  const lang = getLang();
+
+  const monthsArr = lang === 'en' ? ENG_MONTHS : THAI_MONTHS;
+  const monthSel = $('thaiCalendarMonth');
+  monthSel.innerHTML = monthsArr.map((n, i) => `<option value="${i}"${calendarMonthAllowed(y, i, b) ? '' : ' disabled'}>${n}</option>`).join('');
+  monthSel.value = String(m);
+
+  const minYear = Number(b.min.slice(0, 4)), maxYear = b.max ? Number(b.max.slice(0, 4)) : Math.max(minYear + 2, y);
+  const yearSel = $('thaiCalendarYear'), range = `${minYear}-${maxYear}`;
+  if (yearSel.dataset.range !== range) {
+    let years = '';
+    for (let yr = minYear; yr <= maxYear; yr++) {
+      const yrDisp = lang === 'en' ? yr : (yr + 543);
+      years += `<option value="${yr}">${yrDisp}</option>`;
+    }
+    yearSel.innerHTML = years;
+    yearSel.dataset.range = range;
+  }
+  yearSel.value = String(y);
+
+  const weekdaysArr = t('weekdays');
+  $('calendarWeekdays').innerHTML = weekdaysArr.map(w => `<span>${w}</span>`).join('');
+  $('calendarKeyText').textContent = t('keyText');
+
+  const first = new Date(y, m, 1).getDay(), count = new Date(y, m + 1, 0).getDate(), ym = `${y}-${pad2(m + 1)}-`;
+  let markup = '<span aria-hidden="true"></span>'.repeat(first);
+  for (let day = 1; day <= count; day++) {
+    const iso = ym + pad2(day);
+    markup += `<button type="button" class="calendar-day${iso === today ? ' is-today' : ''}" data-date="${iso}" aria-pressed="${iso === selected}"${pickerDateAllowed(iso, b) ? '' : ' disabled'}>${day}</button>`;
+  }
+  $('thaiCalendarDays').innerHTML = markup;
+
+  const prev = new Date(y, m - 1, 1), next = new Date(y, m + 1, 1);
+  $('thaiCalendarPrev').disabled = !calendarMonthAllowed(prev.getFullYear(), prev.getMonth(), b);
+  $('thaiCalendarNext').disabled = !calendarMonthAllowed(next.getFullYear(), next.getMonth(), b);
+  $('thaiCalendarToday').disabled = !pickerDateAllowed(today, b);
+  const selText = thaiDateText(selected);
+  $('thaiCalendarSelection').textContent = selText ? `Selected: ${selText}` : '';
+}
+
+function moveThaiCalendar(delta) {
+  const d = new Date(thaiPicker.year, thaiPicker.month + delta, 1);
+  if (!calendarMonthAllowed(d.getFullYear(), d.getMonth())) return;
+  thaiPicker.year = d.getFullYear();
+  thaiPicker.month = d.getMonth();
+  renderThaiCalendar();
+}
+
+function chooseThaiDate(iso) {
+  if (!thaiPicker.field || !pickerDateAllowed(iso)) return;
+  $(thaiPicker.field).value = iso;
+  $('thaiDateDialog').close();
+  if (thaiPicker.field === 'travelDate') calculateBooking();
+  else updateReminderPreview();
+}
+
+const bookingReminderDate = r => r?.bookingDate || (r?.type === 'nonreserved' ? r.travelDate : null);
+
+function openBookingReminder() {
+  const r = state.lastBookingResult, date = bookingReminderDate(r);
+  if (!r || !date) return;
+  reminderResult = { ...r };
+  const non = r.type === 'nonreserved', openTime = r.openTime || '08:30';
+
+  const rd = $('reminderDate');
+  rd.min = bangkokToday();
+  rd.max = r.travelDate;
+  rd.value = date;
+  $('reminderTime').value = openTime;
+  $('reminderRoute').innerHTML = `
+    <b>${esc(formatStationName(r.origin))} → ${esc(formatStationName(r.destination))}</b>
+    <span>Date: ${bangkokDateLabel(r.travelDate)} · ${esc(r.trainName)}</span>`;
+
+  if (bangkokInstant(date, openTime) <= new Date()) {
+    $('reminderLead').value = 'custom';
+    const p = fmtParts(BKK_DT_FMT, new Date(Date.now() + 3600000));
+    rd.value = `${p.year}-${p.month}-${p.day}`;
+    $('reminderTime').value = `${p.hour}:${p.minute}`;
+  }
+  $('reminderHandoff').classList.add('hidden');
+  updateReminderPreview();
+  $('reminderDialog').showModal();
+}
+
+function reminderInputs() {
+  const lead = $('reminderLead').value;
+  const date = lead === 'custom' ? $('reminderDate').value : shiftISODate(bookingReminderDate(reminderResult), -Number(lead));
+  const time = $('reminderTime').value;
+  return { date, time, at: bangkokInstant(date, time) };
+}
+
+function reminderValidation(p) {
+  if (!p.date || !p.at || !Number.isFinite(p.at.getTime())) return 'Invalid date/time';
+  if (p.at.getTime() <= Date.now()) return 'Time has passed';
+  if (p.date > reminderResult.travelDate) return 'Reminder cannot exceed travel date';
+  return '';
+}
+
+function updateReminderPreview() {
+  syncDateControls();
+  if (!reminderResult) return;
+  $('reminderCustomBox').classList.toggle('hidden', $('reminderLead').value !== 'custom');
+  const p = reminderInputs(), error = reminderValidation(p);
+  $('reminderPreview').innerHTML = `
+    <span>Reminder Time</span>
+    <strong>${p.at ? `${bangkokDateLabel(p.date)} at ${esc(p.time)}` : 'Select date/time'}</strong>
+    <small>Asia/Bangkok Timezone</small>`;
+  $('reminderError').textContent = error;
+  $('reminderError').classList.toggle('hidden', !error);
+  $('googleCalendarBtn').disabled = !!error;
+  $('copyReminderBtn').disabled = !!error;
+}
+
+function openGoogleCalendar() {
+  if (!reminderResult) return;
+  const p = reminderInputs();
+  if (reminderValidation(p)) return updateReminderPreview();
+  const r = reminderResult;
+  const end = new Date(p.at.getTime() + 15 * 60000);
+  const url = new URL('https://calendar.google.com/calendar/render');
+  url.search = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: `Train Ticket Reminder: ${r.origin} → ${r.destination}`,
+    dates: `${calendarStamp(p.at)}/${calendarStamp(end)}`,
+    details: `${r.copyText}\n\nBooking: https://dticket.railway.co.th/`,
+    location: r.origin,
+    ctz: REMINDER_ZONE,
+    openExternalBrowser: '1'
+  });
+  window.open(url.toString(), '_blank', 'noopener,noreferrer');
+  const h = $('reminderHandoff');
+  h.textContent = 'Google Calendar opened. Please click Save.';
+  h.classList.remove('hidden');
+}
+
+function copyReminderText() {
+  if (!reminderResult) return;
+  const p = reminderInputs();
+  copyText(`⏰ Ticket Reminder: ${bangkokDateLabel(p.date)} at ${p.time}\n${reminderResult.copyText}`).then(() => {
+    showToast(t('toastRemindCopied'));
+    $('reminderDialog').close();
+  });
+}
+
+function copyText(text) {
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } finally { ta.remove(); }
+  };
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text).catch(fallback);
+  fallback();
+  return Promise.resolve();
+}
+
+function shareBooking() {
+  const r = state.lastBookingResult;
+  if (!r) return;
+  if (navigator.share) navigator.share({ title: 'Train Advance Booking', text: r.copyText }).catch(() => {});
+  else copyText(r.copyText).then(() => showToast(t('toastCopied')));
+}
+
+function showToast(message) {
+  el.toast.textContent = message;
+  el.toast.classList.add('show');
+  clearTimeout(showToast.t);
+  showToast.t = setTimeout(() => el.toast.classList.remove('show'), 2200);
+}
+
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  STORAGE.set(LS_KEY.theme, theme);
+  $('themeIcon').textContent = theme === 'dark' ? '☀' : '☾';
+  themeMeta.setAttribute('content', theme === 'dark' ? '#1a202c' : '#841b3a');
+}
+
+function applyLanguage(lang) {
+  document.documentElement.dataset.lang = lang;
+  STORAGE.set(LS_KEY.lang, lang);
+  $('langLabel').textContent = lang === 'th' ? 'EN' : 'TH';
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (TRANSLATIONS[lang][key]) el.textContent = TRANSLATIONS[lang][key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (TRANSLATIONS[lang][key]) el.placeholder = TRANSLATIONS[lang][key];
+  });
+
+  if (el.passOrigin.value) el.passOrigin.value = formatStationName(el.passOrigin.value);
+  if (el.passDest.value) el.passDest.value = formatStationName(el.passDest.value);
+
+  syncDateControls();
+  renderFavorites();
+  renderHistories();
+  if (state.lastBookingResult) calculateBooking();
+  else bookingEmpty();
+}
+
+function delegate(container, attr, handler) {
+  container.addEventListener('click', e => {
+    const btn = e.target.closest(`[${attr}]`);
+    if (btn && !btn.disabled && container.contains(btn)) handler(btn);
+  });
+}
+delegate(el.favoriteChips, 'data-favorite', b => {
+  const station = b.dataset.favorite;
+  const o = el.passOrigin.value, dst = el.passDest.value;
+  const target = !o ? el.passOrigin : (!dst && o !== station) ? el.passDest : (state.lastStationField === 'passDest' ? el.passDest : el.passOrigin);
+  target.value = station;
+  state.lastStationField = target === el.passOrigin ? 'passDest' : 'passOrigin';
+  calculateBooking();
+});
+delegate(el.bookingHistory, 'data-history', b => {
+  const item = state.bookingHistory[Number(b.dataset.history)];
+  if (item) restoreBooking(item.restore);
+});
+delegate(el.bookingResult, 'data-action', b => {
+  const action = b.dataset.action;
+  if (action === 'remind-booking') openBookingReminder();
+  else if (action === 'copy-booking') copyText(state.lastBookingResult?.copyText || '').then(() => showToast(t('toastCopied')));
+  else if (action === 'share-booking') shareBooking();
+});
+delegate(el.bookingResult, 'data-suggest-origin', b => {
+  el.passOrigin.value = b.dataset.suggestOrigin;
+  el.passDest.value = b.dataset.suggestDest;
+  calculateBooking();
+  showToast(t('toastSuggest'));
+});
+delegate(el.stationOptions, 'data-station', b => choosePickerStation(b.dataset.station));
+delegate($('thaiCalendarDays'), 'data-date', b => chooseThaiDate(b.dataset.date));
+
+el.selectedTrain.addEventListener('change', calculateBooking);
+
+$('swapStationsBtn').addEventListener('click', () => {
+  [el.passOrigin.value, el.passDest.value] = [el.passDest.value, el.passOrigin.value];
+  calculateBooking();
+  showToast(t('toastSwap'));
+});
+$('clearRouteBtn').addEventListener('click', () => {
+  el.passOrigin.value = el.passDest.value = '';
+  state.lastStationField = 'passOrigin';
+  calculateBooking();
+  showToast(t('toastRouteCleared'));
+});
+el.favOriginBtn.addEventListener('click', () => toggleFavorite(el.passOrigin.value));
+el.favDestBtn.addEventListener('click', () => toggleFavorite(el.passDest.value));
+$('clearFavoritesBtn').addEventListener('click', () => {
+  state.favorites = [];
+  saveFavorites();
+  renderFavoriteButtons();
+  showToast(t('toastFavCleared'));
+});
+$('clearBookingHistoryBtn').addEventListener('click', () => {
+  state.bookingHistory = [];
+  STORAGE.set(LS_KEY.history, []);
+  renderHistories();
+  showToast(t('toastHistCleared'));
+});
+$('themeBtn').addEventListener('click', () => applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+$('langBtn').addEventListener('click', () => applyLanguage(getLang() === 'th' ? 'en' : 'th'));
+
+for (const id in STATION_FIELD_LABELS) $(id).addEventListener('click', () => openStationPicker(id));
+let pickerRaf = 0;
+el.stationSearch.addEventListener('input', () => {
+  cancelAnimationFrame(pickerRaf);
+  pickerRaf = requestAnimationFrame(renderStationPicker);
+});
+$('clearStationSearchBtn').addEventListener('click', () => { el.stationSearch.value = ''; renderStationPicker(); el.stationSearch.focus(); });
+$('closeStationPickerBtn').addEventListener('click', () => $('stationPickerDialog').close());
+
+$('travelDatePickerBtn').addEventListener('click', () => openThaiDatePicker('travelDate'));
+$('reminderDatePickerBtn').addEventListener('click', () => openThaiDatePicker('reminderDate'));
+$('closeThaiDateBtn').addEventListener('click', () => $('thaiDateDialog').close());
+$('thaiCalendarPrev').addEventListener('click', () => moveThaiCalendar(-1));
+$('thaiCalendarNext').addEventListener('click', () => moveThaiCalendar(1));
+$('thaiCalendarMonth').addEventListener('change', e => {
+  const m = Number(e.target.value);
+  if (calendarMonthAllowed(thaiPicker.year, m)) { thaiPicker.month = m; renderThaiCalendar(); }
+});
+$('thaiCalendarYear').addEventListener('change', e => { thaiPicker.year = Number(e.target.value); renderThaiCalendar(); });
+$('thaiCalendarToday').addEventListener('click', () => chooseThaiDate(bangkokToday()));
+
+$('closeReminderBtn').addEventListener('click', () => $('reminderDialog').close());
+$('reminderLead').addEventListener('change', updateReminderPreview);
+$('reminderTime').addEventListener('input', updateReminderPreview);
+$('googleCalendarBtn').addEventListener('click', openGoogleCalendar);
+$('copyReminderBtn').addEventListener('click', copyReminderText);
+
+for (const id of ['stationPickerDialog', 'thaiDateDialog', 'reminderDialog']) {
+  const dlg = $(id);
+  dlg.addEventListener('click', e => {
+    if (e.target !== dlg) return;
+    const r = dlg.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dlg.close();
+  });
+}
+
+(function boot() {
+  initTrains();
+  el.travelDate.min = bangkokToday();
+  renderFavorites();
+  renderHistories();
+  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+  applyLanguage(STORAGE.get(LS_KEY.lang, 'th'));
+  syncDateControls();
+  renderFavoriteButtons();
+  bookingEmpty();
+})();
+</script>
+</body>
+</html>
